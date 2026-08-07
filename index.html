@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Neon Snake</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <h1>NEON SNAKE</h1>
+    <div class="hud">
+      <div>SCORE: <span id="score">0</span></div>
+      <div>BEST: <span id="best">0</span></div>
+    </div>
+    <canvas id="game" width="480" height="480"></canvas>
+    <p class="hint">Arrow keys / WASD to move &middot; Space to pause &middot; R to restart &middot; edges wrap around</p>
+    <div id="overlay" class="overlay">
+      <div class="msg">
+        <h2>NEON SNAKE</h2>
+        <p>Press any arrow key to start</p>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
