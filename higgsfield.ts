@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { HiggsField } from '@higgsfield/client';
+import { HiggsfieldClient } from '@higgsfield/client';
 
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local' });
@@ -15,76 +15,59 @@ async function generateVideoWithSeedance25() {
   }
 
   try {
-    // Initialize Higgsfield client
-    const hf = new HiggsField({
+    // Initialize Higgsfield client with credentials
+    const hf = new HiggsfieldClient({
       apiKey: credentials,
     });
 
     console.log('Starting video generation with Seedance 2.5...');
     console.log('Parameters:');
-    console.log('  - Model: bytedance/seedance-2.5/text-to-video');
+    console.log('  - Endpoint: bytedance/seedance-2.5/text-to-video');
     console.log('  - Prompt: A cinematic scene at sunset');
     console.log('  - Duration: 5 seconds');
     console.log('  - Resolution: 720p');
     console.log('  - Aspect Ratio: 16:9');
     console.log('');
 
-    // Subscribe to generation request
-    const generation = await hf.subscribe({
-      model: 'bytedance/seedance-2.5/text-to-video',
-      input: {
+    // Generate video using Higgsfield API
+    const jobSet = await hf.generate(
+      'bytedance/seedance-2.5/text-to-video',
+      {
         prompt: 'A cinematic scene at sunset',
         duration: 5,
         resolution: '720p',
         aspect_ratio: '16:9',
       },
-    });
+      { withPolling: true } // Enable polling to wait for completion
+    );
 
-    console.log(`Request ID: ${generation.requestId}`);
-    console.log('Waiting for generation to complete...');
+    console.log(`Request ID: ${jobSet.id}`);
+    console.log('Generation completed!');
     console.log('');
 
-    // Poll for completion
-    let isComplete = false;
-    let attempts = 0;
-    const maxAttempts = 120; // 10 minutes with 5-second intervals
-
-    while (!isComplete && attempts < maxAttempts) {
-      const status = await generation.status();
-
-      console.log(`[Attempt ${attempts + 1}/${maxAttempts}] Status: ${status.status}`);
-
-      if (status.status === 'succeeded') {
-        console.log('✓ Generation succeeded!');
-        if (status.output && status.output.video_url) {
-          console.log(`\nGenerated Video URL:\n${status.output.video_url}`);
+    // Check the result status
+    if (jobSet.isCompleted) {
+      console.log('✓ Generation succeeded!');
+      if (jobSet.jobs && jobSet.jobs.length > 0) {
+        const job = jobSet.jobs[0];
+        console.log(`\nJob Details:`);
+        console.log(`  - Status: ${job.status}`);
+        if (job.results && job.results.raw) {
+          console.log(`\nGenerated Video URL:\n${job.results.raw.url}`);
         }
-        isComplete = true;
-      } else if (status.status === 'failed') {
-        console.error('✗ Generation failed');
-        if (status.error) {
-          console.error(`Error details: ${JSON.stringify(status.error)}`);
-        }
-        process.exit(1);
-      } else if (status.status === 'canceled') {
-        console.error('✗ Generation was canceled');
-        process.exit(1);
-      } else if (status.status === 'moderated') {
-        console.error('✗ Generation was rejected (content moderation)');
-        process.exit(1);
       }
-
-      if (!isComplete) {
-        // Wait 5 seconds before polling again
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        attempts++;
-      }
-    }
-
-    if (!isComplete) {
-      console.error('✗ Generation timed out after 10 minutes');
+    } else if (jobSet.isFailed) {
+      console.error('✗ Generation failed');
+      process.exit(1);
+    } else if (jobSet.isCanceled) {
+      console.error('✗ Generation was canceled');
+      process.exit(1);
+    } else if (jobSet.isNsfw) {
+      console.error('✗ Generation was rejected (content moderation)');
       process.exit(1);
     }
+
+    hf.close();
   } catch (error) {
     console.error('Error during generation:');
     if (error instanceof Error) {
