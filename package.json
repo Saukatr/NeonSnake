@@ -1,0 +1,29 @@
+{
+  "name": "neonsnake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate": "ts-node higgsfield.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saukatr/NeonSnake.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Saukatr/NeonSnake/issues"
+  },
+  "homepage": "https://github.com/Saukatr/NeonSnake#readme",
+  "dependencies": {
+    "@higgsfield/client": "^0.2.6",
+    "@types/node": "^26.6.1",
+    "dotenv": "^18.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2"
+  }
+}

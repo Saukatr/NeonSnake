@@ -1,0 +1,3 @@
+# Git ignore file
+.env.local
+node_modules/
