@@ -9,6 +9,8 @@ const CELLS = canvas.width / GRID;
 const BASE_SPEED = 130; // ms per tick, gets faster as score grows
 
 let snake, dir, nextDir, food, score, best, tickMs, timer, running, paused;
+let foodEatAnimation = 0; // Track food eat animation progress
+let snakeGlowIntensity = 0; // Track head glow pulse
 
 let audioCtx = null;
 function getAudioCtx() {
@@ -73,6 +75,13 @@ function start() {
   overlay.classList.add('hidden');
   clearInterval(timer);
   timer = setInterval(tick, tickMs);
+
+  // Animate snake head glow pulse
+  Motion.animate(
+    (v) => { snakeGlowIntensity = v; },
+    { from: 0, to: 1 },
+    { duration: 1.2, repeat: Infinity, type: 'spring', damping: 6 }
+  );
 }
 
 function gameOver() {
@@ -87,6 +96,14 @@ function gameOver() {
     `<h2>GAME OVER</h2><p>Score: ${score} &middot; Best: ${best}</p><p>Press R to restart</p>`;
   overlay.classList.remove('hidden');
   sfx.gameOver();
+
+  // Animate game over message
+  const msgEl = overlay.querySelector('.msg');
+  msgEl.style.opacity = '0';
+  Motion.animate(msgEl,
+    { opacity: [0, 1], scale: [0.8, 1] },
+    { duration: 0.5, type: 'spring', damping: 8 }
+  );
 }
 
 function tick() {
@@ -99,7 +116,14 @@ function tick() {
   else if (head.x >= CELLS) { head.x = 0; wrapped = true; }
   if (head.y < 0) { head.y = CELLS - 1; wrapped = true; }
   else if (head.y >= CELLS) { head.y = 0; wrapped = true; }
-  if (wrapped) sfx.wrap();
+  if (wrapped) {
+    sfx.wrap();
+    // Canvas wrap animation effect
+    Motion.animate(canvas,
+      { boxShadow: ['0 0 0 0 rgba(255, 45, 208, 0.5)', '0 0 30 5 rgba(255, 45, 208, 0)'] },
+      { duration: 0.3 }
+    );
+  }
 
   if (snake.some(s => s.x === head.x && s.y === head.y)) return gameOver();
 
@@ -110,6 +134,21 @@ function tick() {
     scoreEl.textContent = score;
     placeFood();
     sfx.eat();
+
+    // Animate food eat effect
+    foodEatAnimation = 0;
+    Motion.animate(
+      (v) => { foodEatAnimation = v; },
+      { from: 0, to: 1 },
+      { duration: 0.3 }
+    );
+
+    // Animate score with Motion
+    Motion.animate(scoreEl,
+      { scale: [1, 1.2, 1] },
+      { duration: 0.4 }
+    );
+
     if (score % 5 === 0 && tickMs > 60) {
       tickMs -= 10;
       clearInterval(timer);
@@ -126,18 +165,43 @@ function draw() {
   ctx.fillStyle = '#050014';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // food
+  // food with eat animation
+  const foodScale = Math.max(0.6, 1 - foodEatAnimation * 0.4);
+  const foodSize = (GRID - 4) * foodScale;
+  const foodOffset = ((GRID - 4) - foodSize) / 2;
+
   ctx.fillStyle = '#39ff14';
   ctx.shadowColor = '#39ff14';
-  ctx.shadowBlur = 15;
-  ctx.fillRect(food.x * GRID + 2, food.y * GRID + 2, GRID - 4, GRID - 4);
+  ctx.shadowBlur = 15 + foodEatAnimation * 20;
+  ctx.fillRect(
+    food.x * GRID + 2 + foodOffset,
+    food.y * GRID + 2 + foodOffset,
+    foodSize,
+    foodSize
+  );
 
-  // snake
+  // snake with animations
   snake.forEach((seg, i) => {
-    ctx.fillStyle = i === 0 ? '#ff2fd0' : '#0ff';
-    ctx.shadowColor = i === 0 ? '#ff2fd0' : '#0ff';
-    ctx.shadowBlur = 10;
-    ctx.fillRect(seg.x * GRID + 1, seg.y * GRID + 1, GRID - 2, GRID - 2);
+    const isHead = i === 0;
+
+    // Animate head glow
+    const headGlow = isHead ? snakeGlowIntensity : 0;
+
+    ctx.fillStyle = isHead ? '#ff2fd0' : '#0ff';
+    ctx.shadowColor = isHead ? '#ff2fd0' : '#0ff';
+    ctx.shadowBlur = 10 + headGlow * 15;
+
+    // Scale effect for body segments
+    const segmentScale = 1 + (0.1 * Math.sin(Date.now() / 200 + i * 0.3));
+    const segSize = (GRID - 2) * segmentScale;
+    const segOffset = ((GRID - 2) - segSize) / 2;
+
+    ctx.fillRect(
+      seg.x * GRID + 1 + segOffset,
+      seg.y * GRID + 1 + segOffset,
+      segSize,
+      segSize
+    );
   });
 
   ctx.shadowBlur = 0;
@@ -172,3 +236,10 @@ document.addEventListener('keydown', (e) => {
 
 reset();
 draw();
+
+// Animate initial overlay entrance
+overlay.style.opacity = '0';
+Motion.animate(overlay,
+  { opacity: [0, 1] },
+  { duration: 0.6 }
+);
