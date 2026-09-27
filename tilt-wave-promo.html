@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilt Wave Studios - 30s Promo Reel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #111217;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        canvas {
+            display: block;
+            background: #111217;
+            max-height: 90vh;
+            image-rendering: crisp-edges;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #f3efe6;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="controls">
+        <div id="time">0.0s / 30.0s</div>
+        <input type="range" id="seek" min="0" max="30" step="0.033" value="0" style="display:block; margin-top:10px;">
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            width: 1080,
+            height: 1920,
+            fps: 30,
+            duration: 30,
+            bpm: 120,
+            colors: {
+                bg: '#111217',
+                text: '#f3efe6',
+                orange: '#f58a3c',
+                red: '#e8365d',
+                blue: '#4a8cf0',
+                teal: '#3fd7c8',
+                lime: '#c6e14b',
+                dark: '#171820'
+            }
+        };
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = CONFIG.width;
+        canvas.height = CONFIG.height;
+
+        // Timing constants
+        const BEAT = 0.5; // 120 BPM = 2 beats/sec = 0.5s per beat
+
+        // Scene boundaries
+        const SCENES = {
+            frequency: [0, 3.6],
+            studio: [3.6, 7.6],
+            motion: [7.6, 12.1],
+            music: [12.1, 16.5],
+            brand: [16.5, 21],
+            ai: [21, 25.6],
+            outro: [25.6, 29.6]
+        };
+
+        // Utilities
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        const ease = {
+            in: t => t * t,
+            out: t => 1 - (1-t) * (1-t),
+            inOut: t => t < 0.5 ? 2*t*t : -1 + (4-2*t)*t
+        };
+
+        // Helpers
+        const drawDot = (x, y, r, color) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+        };
+
+        const drawRoundRect = (x, y, w, h, r, color) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        const drawPolygon = (x, y, sides, size, rotation, color) => {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2 + rotation;
+                const px = x + Math.cos(angle) * size;
+                const py = y + Math.sin(angle) * size;
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        // Animated logo (7 bars, tilted 45°)
+        const drawAnimatedLogo = (x, y, scale = 1, opacity = 1, wavePhase = 0) => {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+
+            // Dark circle background
+            ctx.fillStyle = CONFIG.colors.dark;
+            ctx.beginPath();
+            ctx.arc(x, y, 90 * scale, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 7 animated bars
+            const colors = [CONFIG.colors.orange, CONFIG.colors.red, CONFIG.colors.blue, CONFIG.colors.teal, CONFIG.colors.lime, CONFIG.colors.orange, CONFIG.colors.red];
+            const barWidth = 28 * scale;
+            const baseHeight = 180 * scale;
+            const tiltDeg = 45;
+
+            for (let i = 0; i < 7; i++) {
+                const barAngle = (i / 7) * 360 - tiltDeg;
+                const rad = barAngle * Math.PI / 180;
+
+                // Wave animation: bars grow in, then undulate
+                const waveOffset = Math.sin(wavePhase + i * 0.4) * 8 * scale;
+                const barHeight = baseHeight * clamp(opacity * 7 - i, 0, 1) + waveOffset;
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(rad);
+
+                ctx.fillStyle = colors[i];
+                drawRoundRect(-barWidth / 2, -barHeight / 2, barWidth, barHeight, barWidth / 4, colors[i]);
+
+                ctx.restore();
+            }
+
+            ctx.restore();
+        };
+
+        // SCENE 1: Frequency (0-3.6s)
+        const renderFrequency = (t) => {
+            const st = (t - SCENES.frequency[0]) / (SCENES.frequency[1] - SCENES.frequency[0]);
+
+            // Pulsing orange dot
+            const dotScale = 1 + Math.sin(t * Math.PI * 4) * 0.3;
+            drawDot(CONFIG.width / 2, CONFIG.height / 2, 25 * dotScale, CONFIG.colors.orange);
+
+            // Expanding rings
+            for (let i = 0; i < 6; i++) {
+                const delay = i * 0.12;
+                if (st > delay) {
+                    const ringT = (st - delay) / (1 - delay);
+                    const radius = 50 + ringT * 450;
+                    const alpha = Math.max(0, 1 - ringT);
+                    ctx.strokeStyle = `rgba(245, 138, 60, ${alpha * 0.6})`;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(CONFIG.width / 2, CONFIG.height / 2, radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+
+            // Five sine waves draw in
+            const waveColors = [CONFIG.colors.orange, CONFIG.colors.red, CONFIG.colors.blue, CONFIG.colors.teal, CONFIG.colors.lime];
+            for (let w = 0; w < 5; w++) {
+                const waveDelay = 0.45 + w * 0.16;
+                if (st >= waveDelay) {
+                    const waveT = (st - waveDelay) / (1 - waveDelay);
+                    const centerY = CONFIG.height / 2 + (w - 2) * 110;
+                    const amp = 60;
+                    const freq = 0.015;
+
+                    ctx.strokeStyle = waveColors[w];
+                    ctx.lineWidth = 4;
+                    ctx.globalAlpha = waveT * 0.9;
+                    ctx.beginPath();
+                    for (let px = 0; px < CONFIG.width * waveT; px += 3) {
+                        const py = centerY + Math.sin(px * freq) * amp;
+                        if (px === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+            }
+        };
+
+        // SCENE 2: Studio (3.6-7.6s)
+        const renderStudio = (t) => {
+            const st = (t - SCENES.studio[0]) / (SCENES.studio[1] - SCENES.studio[0]);
+
+            // Animated logo in center with wave
+            const logoY = CONFIG.height / 2 - 250;
+            drawAnimatedLogo(CONFIG.width / 2, logoY, 1.8, 1, t * Math.PI * 2);
+
+            // Orbiting sparks
+            const orbitR = 280;
+            const sparkColors = [CONFIG.colors.orange, CONFIG.colors.red, CONFIG.colors.blue, CONFIG.colors.teal, CONFIG.colors.lime];
+            for (let i = 0; i < 15; i++) {
+                const angle = (i / 15) * Math.PI * 2 + t * Math.PI;
+                const sx = CONFIG.width / 2 + Math.cos(angle) * orbitR;
+                const sy = logoY + Math.sin(angle) * orbitR;
+                const sr = 3 + Math.sin(t * Math.PI * 3 + i) * 2;
+                drawDot(sx, sy, sr, sparkColors[i % 5]);
+            }
+
+            // Lockup wipes in from left
+            const lockupT = Math.max(0, st - 0.2);
+            const lockupOpacity = ease.out(Math.min(1, lockupT * 2.5));
+            const lockupX = -CONFIG.width / 3 + lockupT * CONFIG.width / 2.5;
+            const lockupY = CONFIG.height / 2 + 280;
+
+            ctx.save();
+            ctx.globalAlpha = lockupOpacity;
+            ctx.fillStyle = CONFIG.colors.text;
+            ctx.font = 'bold 72px "Bricolage Grotesque"';
+            ctx.textAlign = 'center';
+            ctx.fillText('TILT WAVE', lockupX, lockupY);
+            ctx.font = '500 48px "Bricolage Grotesque"';
+            ctx.fillText('STUDIOS', lockupX, lockupY + 70);
+            ctx.restore();
+        };
+
+        // SCENE 3: Motion Graphics (7.6-12.1s)
+        const renderMotion = (t) => {
+            const st = (t - SCENES.motion[0]) / (SCENES.motion[1] - SCENES.motion[0]);
+            const beat = t / BEAT;
+
+            const cx = CONFIG.width / 2;
+            const cy = CONFIG.height / 2.8;
+
+            // Hero polygon morphing (kick-synced)
+            const shapeSeq = [3, 4, 5, 6, 8, 12];
+            const beatMod = beat % 6;
+            const shapeIdx = Math.floor(beatMod);
+            const morphT = beatMod - shapeIdx;
+            const sides = Math.round(shapeSeq[shapeIdx] + (shapeSeq[(shapeIdx + 1) % 6] - shapeSeq[shapeIdx]) * morphT);
+
+            const polySize = 110;
+            drawPolygon(cx, cy, sides, polySize, -Math.PI / 2, CONFIG.colors.orange);
+
+            // Punch hole
+            ctx.clearRect(cx - 45, cy - 45, 90, 90);
+            ctx.fillStyle = CONFIG.colors.bg;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 45, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ring of 12 orbiting pills
+            const pillR = 220;
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2 + beat * Math.PI * 0.5;
+                const px = cx + Math.cos(angle) * pillR;
+                const py = cy + Math.sin(angle) * pillR;
+                const colors = [CONFIG.colors.orange, CONFIG.colors.red, CONFIG.colors.blue, CONFIG.colors.teal, CONFIG.colors.lime];
+                drawRoundRect(px - 22, py - 12, 44, 24, 12, colors[i % 5]);
+            }
+
+            // Bouncing shapes row at top
+            const topY = 200;
+            const shapeTypes = ['circle', 'triangle', 'square', 'circle', 'triangle'];
+            for (let i = 0; i < 5; i++) {
+                const x = 100 + i * 180;
+                const bounce = Math.abs(Math.sin(beat * Math.PI - i * 0.3)) * 60;
+                const shapeType = shapeTypes[i];
+                const colors = [CONFIG.colors.orange, CONFIG.colors.blue, CONFIG.colors.teal];
+
+                if (shapeType === 'circle') {
+                    drawDot(x, topY - bounce, 22, colors[i % 3]);
+                } else if (shapeType === 'triangle') {
+                    drawPolygon(x, topY - bounce, 3, 22, 0, colors[i % 3]);
+                } else {
+                    ctx.fillStyle = colors[i % 3];
+                    ctx.fillRect(x - 22, topY - 22 - bounce, 44, 44);
+                }
+            }
+
+            // Bouncing circles at bottom (outlined)
+            const bottomY = CONFIG.height - 250;
+            for (let i = 0; i < 7; i++) {
+                const x = 120 + i * 145;
+                const bounce = Math.abs(Math.cos(beat * Math.PI - i * 0.35)) * 90;
+                ctx.strokeStyle = CONFIG.colors.text;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x, bottomY + bounce, 18, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Cream squash-and-stretch blob
+            const blobX = CONFIG.width - 120;
+            const blobY = CONFIG.height / 2;
+            const blobScaleX = 1 + Math.sin(beat * Math.PI * 2) * 0.35;
+            const blobScaleY = 1 + Math.cos(beat * Math.PI * 2) * 0.35;
+
+            ctx.fillStyle = CONFIG.colors.text;
+            ctx.globalAlpha = 0.65;
+            ctx.beginPath();
+            ctx.ellipse(blobX, blobY, 45 * blobScaleX, 55 * blobScaleY, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        };
+
+        // SCENE 4: Music Videos (12.1-16.5s)
+        const renderMusic = (t) => {
+            const st = (t - SCENES.music[0]) / (SCENES.music[1] - SCENES.music[0]);
+            const beat = t / BEAT;
+
+            const cx = CONFIG.width / 2;
+            const cy = CONFIG.height / 2;
+
+            // 64-bar circular spectrum
+            for (let i = 0; i < 64; i++) {
+                const angle = (i / 64) * Math.PI * 2;
+                const barH = 35 + Math.abs(Math.sin(beat + i * 0.08)) * 60;
+                const barR = 320;
+
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle);
+
+                ctx.fillStyle = CONFIG.colors.orange;
+                ctx.fillRect(-3, -barH / 2, 6, barH);
+
+                ctx.restore();
+            }
+
+            // Logo at center with animation
+            drawAnimatedLogo(cx, cy, 1.2, 1, t * Math.PI * 2);
+
+            // Film strip animation (scrolling)
+            const filmY = CONFIG.height / 3.5;
+            const filmW = 850;
+            const filmH = 200;
+            const filmX = (CONFIG.width - filmW) / 2;
+            const scroll = (t * 120) % filmW;
+
+            // Border
+            ctx.strokeStyle = CONFIG.colors.text;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(filmX, filmY, filmW, filmH);
+
+            // Sprocket holes (top and bottom)
+            for (let i = -1; i < 12; i++) {
+                const x = filmX + (i * 100 - scroll) % filmW;
+                ctx.strokeStyle = CONFIG.colors.orange;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - 6, filmY - 18, 12, 12);
+                ctx.strokeRect(x - 6, filmY + filmH + 6, 12, 12);
+            }
+
+            // Play triangles
+            for (let i = 0; i < 3; i++) {
+                const x = filmX + 100 + i * 280 - scroll % filmW;
+                if (x > filmX && x < filmX + filmW) {
+                    ctx.fillStyle = CONFIG.colors.orange;
+                    ctx.beginPath();
+                    ctx.moveTo(x, filmY + filmH / 2 - 25);
+                    ctx.lineTo(x + 40, filmY + filmH / 2);
+                    ctx.lineTo(x, filmY + filmH / 2 + 25);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            // Live waveform with playhead
+            const waveY = CONFIG.height - 280;
+            const waveW = 800;
+            const waveX = (CONFIG.width - waveW) / 2;
+            const waveH = 120;
+
+            ctx.strokeStyle = CONFIG.colors.text;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let px = 0; px < waveW; px += 2) {
+                const py = waveY + waveH / 2 + Math.sin(px * 0.025 + beat) * 45;
+                if (px === 0) ctx.moveTo(waveX + px, py);
+                else ctx.lineTo(waveX + px, py);
+            }
+            ctx.stroke();
+
+            // Orange playhead
+            const playheadX = waveX + st * waveW;
+            ctx.strokeStyle = CONFIG.colors.orange;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(playheadX, waveY);
+            ctx.lineTo(playheadX, waveY + waveH);
+            ctx.stroke();
+
+            // White flash cuts every 4 beats
+            if ((beat % 4) < 0.15) {
+                ctx.fillStyle = `rgba(255,255,255,${Math.sin((beat % 4) / 0.15 * Math.PI) * 0.4})`;
+                ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+            }
+        };
+
+        // SCENE 5: Brand Identity (16.5-21s)
+        const renderBrand = (t) => {
+            const st = (t - SCENES.brand[0]) / (SCENES.brand[1] - SCENES.brand[0]);
+
+            // Grid draws on
+            ctx.strokeStyle = `rgba(243,239,230,${st * 0.15})`;
+            ctx.lineWidth = 1;
+            const gridSpacing = 200;
+            for (let x = 0; x <= CONFIG.width; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, CONFIG.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= CONFIG.height; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(CONFIG.width, y);
+                ctx.stroke();
+            }
+
+            const cx = CONFIG.width / 2;
+            const cy = CONFIG.height / 2;
+
+            // Guide circles trace
+            const guideT = Math.max(0, st - 0.1);
+            for (const r of [80, 140, 200, 270]) {
+                const drawT = Math.min(1, guideT * 3);
+                ctx.strokeStyle = `rgba(245,138,60,${drawT * 0.4})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2 * drawT);
+                ctx.stroke();
+            }
+
+            // Dashed diagonal
+            const diagT = Math.max(0, st - 0.2);
+            ctx.strokeStyle = `rgba(232,54,93,${diagT * 0.5})`;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([12, 12]);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(CONFIG.width * diagT, CONFIG.height * diagT);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Logo assembles bar-by-bar (each bar fades in)
+            const logoT = Math.max(0, st - 0.3);
+            drawAnimatedLogo(cx, cy, 1.5, logoT, 0);
+
+            // Brand swatches pop with hex codes
+            const swatchT = Math.max(0, st - 0.5);
+            const swatches = [
+                { color: CONFIG.colors.orange, hex: '#f58a3c' },
+                { color: CONFIG.colors.red, hex: '#e8365d' },
+                { color: CONFIG.colors.blue, hex: '#4a8cf0' },
+                { color: CONFIG.colors.teal, hex: '#3fd7c8' },
+                { color: CONFIG.colors.lime, hex: '#c6e14b' }
+            ];
+
+            for (let i = 0; i < 5; i++) {
+                const delay = i * 0.06;
+                if (swatchT >= delay) {
+                    const popT = Math.min(1, (swatchT - delay) * 3);
+                    const popScale = ease.out(popT);
+                    const sx = 100 + i * 170;
+                    const sy = CONFIG.height - 140;
+                    const sz = 85 * popScale;
+
+                    ctx.fillStyle = swatches[i].color;
+                    ctx.fillRect(sx - sz / 2, sy - sz / 2, sz, sz);
+
+                    ctx.fillStyle = CONFIG.colors.text;
+                    ctx.font = '14px "Bricolage Grotesque"';
+                    ctx.textAlign = 'center';
+                    ctx.globalAlpha = popScale;
+                    ctx.fillText(swatches[i].hex, sx, sy + 65);
+                    ctx.globalAlpha = 1;
+                }
+            }
+        };
+
+        // SCENE 6: AI Content (21-25.6s)
+        const renderAI = (t) => {
+            const st = (t - SCENES.ai[0]) / (SCENES.ai[1] - SCENES.ai[0]);
+            const beat = t / BEAT;
+
+            const cx = CONFIG.width / 2;
+            const cy = CONFIG.height / 2;
+
+            // Node network (20 nodes in a spiral)
+            const nodes = [];
+            for (let i = 0; i < 20; i++) {
+                const angle = (i / 20) * Math.PI * 2;
+                const rad = 200 + Math.sin(t + i) * 80;
+                nodes.push({
+                    x: cx + Math.cos(angle) * rad,
+                    y: cy + Math.sin(angle) * rad
+                });
+            }
+
+            // Draw connections
+            ctx.strokeStyle = `rgba(74,140,240,0.25)`;
+            ctx.lineWidth = 1;
+            for (let i = 0; i < nodes.length; i++) {
+                const n1 = nodes[i];
+                const n2 = nodes[(i + 1) % nodes.length];
+                ctx.beginPath();
+                ctx.moveTo(n1.x, n1.y);
+                ctx.lineTo(n2.x, n2.y);
+                ctx.stroke();
+            }
+
+            // Data pulses travelling along connections
+            for (let i = 0; i < nodes.length; i++) {
+                const n1 = nodes[i];
+                const n2 = nodes[(i + 1) % nodes.length];
+                const pulseT = ((t * 2 + i * 0.1) % 1);
+                const px = n1.x + (n2.x - n1.x) * pulseT;
+                const py = n1.y + (n2.y - n1.y) * pulseT;
+                const ps = 5 + Math.sin(pulseT * Math.PI) * 4;
+                drawDot(px, py, ps, CONFIG.colors.orange);
+            }
+
+            // Node glows
+            for (const n of nodes) {
+                ctx.fillStyle = `rgba(245,138,60,0.2)`;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, 12 + Math.sin(t * Math.PI) * 4, 0, Math.PI * 2);
+                ctx.fill();
+                drawDot(n.x, n.y, 4, CONFIG.colors.orange);
+            }
+
+            // Rotating AI sparkle (4-point)
+            for (let i = 0; i < 4; i++) {
+                const angle = (i / 4) * Math.PI * 2 + t * 2;
+                const r1 = 150;
+                const r2 = 220;
+                const x1 = cx + Math.cos(angle) * r1;
+                const y1 = cy + Math.sin(angle) * r1;
+                const x2 = cx + Math.cos(angle) * r2;
+                const y2 = cy + Math.sin(angle) * r2;
+
+                ctx.strokeStyle = CONFIG.colors.orange;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = Math.sin(angle + t) * 0.4 + 0.6;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+
+            // Browser windows fly in from sides
+            const windowH = 340;
+            const windowW = 280;
+
+            // Left window
+            const leftT = Math.min(1, st * 1.8);
+            const leftX = -windowW / 2 + leftT * (CONFIG.width / 4 + windowW / 2);
+            drawBrowserWindow(leftX, CONFIG.height / 2 - 50, windowW, windowH, "tiltwave.studio/", leftT);
+
+            // Right window
+            const rightT = Math.min(1, (st - 0.15) * 1.8);
+            const rightX = CONFIG.width + windowW / 2 - rightT * (CONFIG.width / 4 + windowW / 2);
+            drawBrowserWindow(rightX, CONFIG.height / 2 - 50, windowW, windowH, "make-something", rightT);
+        };
+
+        const drawBrowserWindow = (x, y, w, h, text, opacity) => {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+
+            // Window border
+            ctx.strokeStyle = CONFIG.colors.text;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - w / 2, y - h / 2, w, h);
+
+            // Title bar
+            ctx.fillStyle = CONFIG.colors.orange;
+            ctx.fillRect(x - w / 2, y - h / 2, w, 32);
+
+            // Traffic light buttons
+            const btnY = y - h / 2 + 16;
+            const colors = [CONFIG.colors.orange, CONFIG.colors.red, CONFIG.colors.blue];
+            for (let i = 0; i < 3; i++) {
+                drawDot(x - w / 2 + 12 + i * 14, btnY, 4, colors[i]);
+            }
+
+            // Text in content area
+            ctx.fillStyle = CONFIG.colors.text;
+            ctx.font = '12px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('> ' + text, x - w / 2 + 12, y - 60);
+
+            // Blinking cursor
+            if (Math.sin(Date.now() * 0.004) > 0) {
+                const textWidth = ctx.measureText('> ' + text).width;
+                ctx.strokeStyle = CONFIG.colors.orange;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x - w / 2 + 12 + textWidth + 2, y - 68);
+                ctx.lineTo(x - w / 2 + 12 + textWidth + 2, y - 52);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        };
+
+        // SCENE 7: Outro (25.6-29.6s)
+        const renderOutro = (t) => {
+            const st = (t - SCENES.outro[0]) / (SCENES.outro[1] - SCENES.outro[0]);
+
+            // Logo full size with animation
+            drawAnimatedLogo(CONFIG.width / 2, CONFIG.height / 2 - 320, 2.2, st, t * Math.PI * 2);
+
+            // Tagline text (fades in)
+            const textOpacity = Math.min(1, st * 2);
+            ctx.globalAlpha = textOpacity;
+
+            ctx.fillStyle = CONFIG.colors.text;
+            ctx.font = 'bold 64px "Bricolage Grotesque"';
+            ctx.textAlign = 'center';
+            ctx.fillText('TILT WAVE', CONFIG.width / 2, CONFIG.height / 2 + 200);
+            ctx.fillText('STUDIOS', CONFIG.width / 2, CONFIG.height / 2 + 280);
+
+            ctx.font = '500 42px "Bricolage Grotesque"';
+            ctx.fillStyle = CONFIG.colors.orange;
+            ctx.fillText('Catch the wave.', CONFIG.width / 2, CONFIG.height / 2 + 380);
+
+            ctx.globalAlpha = 1;
+        };
+
+        // Main render function
+        window.renderAt = (t) => {
+            // Clear canvas
+            ctx.fillStyle = CONFIG.colors.bg;
+            ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
+
+            // Dispatch to scene renderer
+            if (t < SCENES.frequency[1]) renderFrequency(t);
+            else if (t < SCENES.studio[1]) renderStudio(t);
+            else if (t < SCENES.motion[1]) renderMotion(t);
+            else if (t < SCENES.music[1]) renderMusic(t);
+            else if (t < SCENES.brand[1]) renderBrand(t);
+            else if (t < SCENES.ai[1]) renderAI(t);
+            else renderOutro(t);
+        };
+
+        // Interactive preview
+        let currentTime = 0;
+        const timeDisplay = document.getElementById('time');
+        const seekInput = document.getElementById('seek');
+
+        const animate = () => {
+            window.renderAt(currentTime);
+            timeDisplay.textContent = currentTime.toFixed(2) + 's / ' + CONFIG.duration + 's';
+            currentTime += 1 / CONFIG.fps;
+            if (currentTime < CONFIG.duration) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        seekInput.addEventListener('input', (e) => {
+            currentTime = parseFloat(e.target.value);
+            window.renderAt(currentTime);
+            timeDisplay.textContent = currentTime.toFixed(2) + 's / ' + CONFIG.duration + 's';
+        });
+
+        animate();
+    </script>
+</body>
+</html>
