@@ -4,6 +4,56 @@ const scoreEl = document.getElementById('score');
 const bestEl = document.getElementById('best');
 const overlay = document.getElementById('overlay');
 
+const { animate, stagger } = anime;
+const wrapEl = document.querySelector('.wrap');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FX = (targets, params) => { if (!reduceMotion) return animate(targets, params); };
+
+function popScore() {
+  FX('#score', { scale: [1.8, 1], color: ['#39ff14', '#0ff'], duration: 400, ease: 'outBack' });
+}
+
+function burst(cell) {
+  const x = cell.x * GRID + GRID / 2;
+  const y = cell.y * GRID + GRID / 2;
+  const top = canvas.offsetTop;
+  const left = canvas.offsetLeft;
+  const frag = document.createDocumentFragment();
+  const parts = [];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = (left + x - 3) + 'px';
+    p.style.top = (top + y - 3) + 'px';
+    frag.appendChild(p);
+    parts.push(p);
+  }
+  wrapEl.appendChild(frag);
+  const done = () => parts.forEach(p => p.remove());
+  const a = FX(parts, {
+    x: () => anime.utils.random(-45, 45),
+    y: () => anime.utils.random(-45, 45),
+    scale: [1, 0],
+    opacity: [1, 0],
+    duration: 600,
+    ease: 'outExpo',
+    onComplete: done,
+  });
+  if (!a) done();
+}
+
+function shake() {
+  FX(canvas, { x: [0, -10, 10, -8, 8, -4, 4, 0], duration: 450, ease: 'outQuad' });
+}
+
+function showOverlay() {
+  overlay.classList.remove('hidden');
+  FX(overlay, { opacity: [0, 1], duration: 400, ease: 'outQuad' });
+  FX(overlay.querySelectorAll('.msg > *'), {
+    y: [20, 0], opacity: [0, 1], delay: stagger(100), duration: 500, ease: 'outCubic',
+  });
+}
+
 const GRID = 20;
 const CELLS = canvas.width / GRID;
 const BASE_SPEED = 130; // ms per tick, gets faster as score grows
@@ -85,7 +135,8 @@ function gameOver() {
   }
   overlay.querySelector('.msg').innerHTML =
     `<h2>GAME OVER</h2><p>Score: ${score} &middot; Best: ${best}</p><p>Press R to restart</p>`;
-  overlay.classList.remove('hidden');
+  showOverlay();
+  shake();
   sfx.gameOver();
 }
 
@@ -108,6 +159,8 @@ function tick() {
   if (head.x === food.x && head.y === food.y) {
     score++;
     scoreEl.textContent = score;
+    popScore();
+    burst(head);
     placeFood();
     sfx.eat();
     if (score % 5 === 0 && tickMs > 60) {
@@ -172,3 +225,16 @@ document.addEventListener('keydown', (e) => {
 
 reset();
 draw();
+
+// intro: title letters + HUD + canvas
+const title = document.querySelector('h1');
+title.innerHTML = [...title.textContent].map(c => `<span class="ch">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+FX('h1 .ch', { y: [-30, 0], opacity: [0, 1], delay: stagger(60), duration: 700, ease: 'outBack' });
+FX('.hud > div', { opacity: [0, 1], y: [-10, 0], delay: stagger(120, { start: 400 }), duration: 500 });
+FX(canvas, { scale: [0.9, 1], opacity: [0, 1], duration: 700, delay: 300, ease: 'outCubic' });
+FX('.msg > *', { y: [20, 0], opacity: [0, 1], delay: stagger(100, { start: 700 }), duration: 500 });
+FX('.hint', { opacity: [0, 0.6], delay: 900, duration: 600 });
+// idle neon pulse on the canvas border glow
+FX(canvas, {
+  borderColor: ['#ff2fd0', '#0ff'], duration: 2500, alternate: true, loop: true, ease: 'inOutSine', delay: 1000,
+});

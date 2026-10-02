@@ -71,3 +71,14 @@ canvas {
   color: #0ff;
   text-shadow: 0 0 8px #0ff;
 }
+
+.ch { display: inline-block; }
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #39ff14;
+  box-shadow: 0 0 8px #39ff14;
+  pointer-events: none;
+}
