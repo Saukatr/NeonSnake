@@ -1,18 +1,8 @@
 {
-  "width": 1080,
-  "height": 1920,
-  "fps": 30,
+  "format": {"aspectRatio": "9:16", "width": 1080, "height": 1920, "fps": 30},
   "scenes": [
-    {
-      "id": "approved-scene-name",
-      "name": "Approved scene name",
-      "from": 0,
-      "durationInFrames": 90,
-      "title": "Approved scene name",
-      "body": "Replace this with the approved transcript lines and scene animation.",
-      "background": "#17151f",
-      "accent": "#ff7a59",
-      "soundEffects": []
-    }
+    {"id": "anchal-over-the-world", "name": "Anchal Over the World", "transcript": "আমার স্নেহের আঁচল সর্বদা এই বিশ্ব চলাচর আচ্ছাদিত করে রাখে", "startMs": 262000, "endMs": 270000, "from": 0, "durationInFrames": 240, "componentName": "AnchalOverTheWorld", "assets": ["TW wordmark (rendered text)"], "visualDescription": "Earth in starry sky; red-bordered white anchal sweeps in and wraps the globe; camera push-in.", "soundEffects": [{"file": "transitions.mp3", "trigger": "anchal sweep", "frame": 40}]},
+    {"id": "no-sorrow-where-she-stands", "name": "No Sorrow Where She Stands", "transcript": "আমি যেখানে অবস্থান করি সেখানে কারো কোন দুঃখ থাকে না। দুর্গতি সেখানে বাসা বাঁধতে পারে না।", "startMs": 270000, "endMs": 280000, "from": 240, "durationInFrames": 300, "componentName": "NoSorrowWhereSheStands", "assets": ["TW wordmark (rendered text)"], "visualDescription": "Storm clouds; alta-red feet step on lotus; golden ring bursts; clouds become marigold petals.", "soundEffects": [{"file": "Impact.mp3", "trigger": "feet land", "frame": 90}, {"file": "aha-moment.MP3", "trigger": "clouds break", "frame": 110}]},
+    {"id": "i-am-durga", "name": "I Am Durga", "transcript": "কারণ আমি দুর্গা দুর্গা দুর্গা", "startMs": 280000, "endMs": 288000, "from": 540, "durationInFrames": 240, "componentName": "IAmDurga", "assets": ["TW wordmark (rendered text)"], "visualDescription": "Original goddess silhouette, ten arms fan out with weapon outlines, three name slams, Shubho Mahalaya end card.", "soundEffects": [{"file": "Impact.mp3", "trigger": "name slam 1-3", "frames": [70, 100, 130]}, {"file": "aha-moment.MP3", "trigger": "end card", "frame": 180}]}
   ]
 }
