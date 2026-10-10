@@ -1,0 +1,114 @@
+[
+ {
+  "ref": "r1",
+  "srcIn": 17.98,
+  "rate": 0.34,
+  "start": 0.0,
+  "end": 2.8,
+  "note": "radio tuned at dawn: the Mahalaya broadcast"
+ },
+ {
+  "ref": "r1",
+  "srcIn": 2.1,
+  "rate": 0.72,
+  "start": 2.8,
+  "end": 6.676,
+  "note": "clay home glowing at first light"
+ },
+ {
+  "ref": "r1",
+  "srcIn": 5.05,
+  "rate": 0.62,
+  "start": 6.676,
+  "end": 9.59,
+  "note": "family listening"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 5.2,
+  "rate": 1.0,
+  "start": 9.59,
+  "end": 13.038,
+  "note": "misty Ganga, Howrah bridge, kash"
+ },
+ {
+  "ref": "r3",
+  "srcIn": 8.3,
+  "rate": 1.0,
+  "start": 13.038,
+  "end": 15.476,
+  "note": "the Goddess takes form, arms appear"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 27.05,
+  "rate": 0.6,
+  "start": 15.476,
+  "end": 18.64,
+  "note": "reveal on the strongest accent"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 19.0,
+  "rate": 0.95,
+  "start": 18.64,
+  "end": 21.792,
+  "note": "sari, anklets, trident"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 16.0,
+  "rate": 0.9,
+  "start": 21.792,
+  "end": 24.892,
+  "note": "the elephant strides through the mud"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 29.0,
+  "rate": 1.0,
+  "start": 24.892,
+  "end": 27.063,
+  "note": "Maa arrives on the elephant"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 33.0,
+  "rate": 1.0,
+  "start": 27.063,
+  "end": 30.012,
+  "note": "dhakis lead the way"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 41.0,
+  "rate": 1.0,
+  "start": 30.012,
+  "end": 33.263,
+  "note": "triumphant wide: Maa with the dhakis"
+ },
+ {
+  "ref": "r1",
+  "srcIn": 7.0,
+  "rate": 1.0,
+  "start": 33.263,
+  "end": 36.722,
+  "note": "the idol carried home through kash"
+ },
+ {
+  "ref": "r1",
+  "srcIn": 15.0,
+  "rate": 0.8,
+  "start": 36.722,
+  "end": 39.0,
+  "note": "shiuli flowers fall"
+ },
+ {
+  "ref": "r2",
+  "srcIn": 27.25,
+  "rate": 0.34,
+  "start": 39.0,
+  "end": 44.5,
+  "note": "final: Maa Durga, Shubho Mahalaya (HyperFrames title over this)"
+ }
+]

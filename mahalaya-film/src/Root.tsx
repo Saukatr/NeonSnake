@@ -1,7 +1,6 @@
 import { Composition } from "remotion";
-import { Mahalaya } from "./Mahalaya";
-import { FPS, TOTAL_FRAMES } from "./timing";
+import { Film, FILM_FRAMES, FPS } from "./Film";
 
 export const RemotionRoot = () => (
-  <Composition id="Mahalaya" component={Mahalaya} durationInFrames={TOTAL_FRAMES} fps={FPS} width={1920} height={1080} />
+  <Composition id="Mahalaya" component={Film} durationInFrames={FILM_FRAMES} fps={FPS} width={1920} height={1080} />
 );

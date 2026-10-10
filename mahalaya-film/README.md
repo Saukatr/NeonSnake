@@ -1,37 +1,51 @@
-# Mahalaya: The Triumph of Light over Darkness
+# Mahalaya: Shubho Mahalaya (reference-footage edit)
 
-A 49.75 s devotional film for Mahalaya, built entirely with local tools:
-**Remotion** (master timeline, scenes 1–5, audio) and **HyperFrames** (scene 6 plus the final
-"SHUBHO MAHALAYA" card). No generative video service was used. Every motion is procedural,
-and every figure is cut directly from the supplied character sheet.
+A 44.5 s devotional film for Mahalaya, cut **only from the three supplied reference videos**
+(their audio is not used). It is built with local tools:
+- **ffmpeg** for shot prep: crop, watermark removal and motion-interpolated slow motion.
+- **Remotion** for the master timeline, light/dust/petal overlays and audio.
+- **HyperFrames** for beat detection and the final "SHUBHO MAHALAYA" card.
 
-## Timeline (seconds on the trimmed soundtrack)
+## Audio
 
-The soundtrack is the supplied recording with its leading 1.27 s of silence removed. Its first
-audible note is t = 0. It ends with a 3.5 s fade-out (46.25 → 49.75). Accents come from
-`hyperframes beats` (`hf/beats/soundtrack.wav.json`).
+The supplied recording, trimmed as follows:
+- The leading 1.27 s of silence is removed, so t = 0 is the first note.
+- It is cut to 44.5 s.
+- A 5 s **quarter-sine fade-out** runs from 39.5 to 44.5 s. It eases out from the music and reaches true silence on the last frame, as the picture fades to black.
 
-| Time | Scene | Sync points |
+## Shot list (`src/shots.json`)
+
+| Time (s) | Source | Shot |
 |---|---|---|
-| 0.00 – 6.68 | 1 · Sacred beginning: dawn cosmos, god rays, temples, push-in | dissolve lands on the 6.68 accent |
-| 6.68 – 13.04 | 2 · Rise of Mahishasura: storm, low-angle silhouette, lightning; the gods as pillars of light | lightning on 7.54 / 8.62 / 9.59 / 9.82; gods wake on 12.50 |
-| 13.04 – 21.79 | 3 · Creation of Maa Durga: five energy streams converge, then a burst | **reveal on 15.48 (strongest hit)**, lion glow on 16.09, pseudo-orbit + tilt up |
-| 21.79 – 30.01 | 4 · Divine battle: charge, close-ups, slow-motion two-shot | cuts on 24.89 / 25.26 / 25.67, clash 26.96, sparks 27.55 – 29.56 |
-| 30.01 – 36.72 | 5 · Victory of light: the decisive strike flash, storm clears, gods bow, pullback | strike on 30.01 |
-| 36.00 – 43.72 | 6 · Maa is coming home (HyperFrames): river dawn, kash, toran, bells, dhak, diyas, family over the water | bells/dhak on 37.50 / 37.62 / 38.28 / 38.50 |
-| 43.72 – 49.75 | Final · SHUBHO MAHALAYA (HyperFrames) | title from 43.75, subtitle 45.28, fade to black 48.65 – 49.75 |
+| 0.00 – 2.80 | ref 1 | Radio tuned at dawn: the Mahalaya broadcast |
+| 2.80 – 6.68 | ref 1 | Clay home glowing at first light |
+| 6.68 – 9.59 | ref 1 | The family listening |
+| 9.59 – 13.04 | ref 2 | Misty Ganga, Howrah bridge, kash |
+| 13.04 – 15.48 | ref 3 | The Goddess takes form; arms appear |
+| 15.48 – 18.64 | ref 2 | **Reveal of Maa Durga on the strongest accent** (bloom flash) |
+| 18.64 – 21.79 | ref 2 | Sari, anklets, trident |
+| 21.79 – 24.89 | ref 2 | The elephant strides through the mud (hard cut on the 21.8 hit) |
+| 24.89 – 27.06 | ref 2 | Maa arrives on the elephant |
+| 27.06 – 30.01 | ref 2 | Dhakis lead the way |
+| 30.01 – 33.26 | ref 2 | Triumphant wide: Maa with the dhakis, petals begin |
+| 33.26 – 36.72 | ref 1 | The idol carried home through kash |
+| 36.72 – 39.00 | ref 1 | Shiuli flowers fall |
+| 39.00 – 44.50 | ref 2 + HyperFrames | Maa Durga in a halo; **SHUBHO MAHALAYA**; fade to black |
+
+Each vertical or square reference shot becomes a sharp centre panel with feathered edges, over a blurred copy of itself, to fill 16:9.
+- **ref 1:** the creator's handle, avatar and screen-recording player UI are cropped out or avoided.
+- **ref 2:** the logo is cropped off.
+- **ref 3:** the black side bars are removed.
 
 ## Rebuild
 
 ```bash
 npm install
-# 1. character cut-outs + textures (numpy/PIL only)
-python3 tools/seg.py && python3 tools/cut.py && python3 tools/tex.py
-# 2. HyperFrames segment → public/hf_bengal.mp4
-cd hf && npx hyperframes render . -f 24 -q high --crf 14 -o ../public/hf_bengal.mp4 && cd ..
-# 3. master render (point Remotion at a local Chromium if it can't download one)
-REMOTION_CHROME=/path/to/chrome-headless-shell npx remotion render src/index.ts Mahalaya out/mahalaya_1080p.mp4 \
+python3 tools/prep_shots.py <folder with the three reference videos>      # → public/shots/s01..s14.mp4
+cd hf && npx hyperframes render . -f 24 -q high --crf 14 -o ../public/hf_final.mp4 && cd ..
+REMOTION_CHROME=/path/to/chrome-headless-shell npx remotion render src/index.ts Mahalaya out/mahalaya_ref_1080p.mp4 \
   --codec=h264 --crf=16 --color-space=bt709 --audio-codec=aac --audio-bitrate=320k
 ```
 
-`tools/seg.py` / `tools/cut.py` write their intermediate mask to `work/`. Create that folder first (`mkdir -p work`).
+The final card's portrait panel (`hf/final_panel.mp4`) is ref 2 at 27.165 s, cropped to `472:816:0:36`, slowed to 0.34×,
+motion-interpolated to 24 fps and scaled to 452×780.
