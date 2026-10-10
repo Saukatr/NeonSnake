@@ -3,11 +3,11 @@
 // the Goddess taking form against the sun, the boat, the procession, the elephant, dhakis,
 // shiuli flowers), but every frame is drawn here in code.
 import React from "react";
-import { AbsoluteFill, Audio, Img, Sequence, continueRender, delayRender, interpolate, random, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Img, Loop, OffthreadVideo, Sequence, interpolate, random, staticFile, useCurrentFrame } from "remotion";
 import { W, H, lerp, pulse, useT, Sky, Clouds, GodRays, Glow, Motes, Petals, Lightning, Ridge, Vignette, Grain } from "./fx";
 import {
   Durga, Demon, HowrahBridge, Kash, useKash, Radio, Hut, Palm, Dhaki, Boat, ShiuliTree, ShiuliFlower, Lotus, Diya, SunMandala,
-  Elephant, Procession, TWLogo,
+  Elephant, Procession,
 } from "./art";
 
 export const FPS = 24;
@@ -22,13 +22,6 @@ const S = {
 const ARM_BEATS = [16.091, 16.44, 17.31, 17.636, 17.914, 18.355, 18.715, 19.4, 20.19, 20.561];
 const CLASH = [24.892, 25.263, 25.67, 25.774, 26.958, 27.55, 28.34, 28.607, 29.559];
 const DHAK = [30.337, 31.103, 31.544, 31.985, 33.263, 34.342, 35.376, 35.898, 36.037, 36.722];
-
-// Cinzel 700 for the TW mark
-const fontHandle = typeof document !== "undefined" ? delayRender("tw-font") : null;
-if (typeof document !== "undefined") {
-  const ff = new FontFace("CinzelTW", `url(${staticFile("fonts/cinzel-latin-700-normal.woff2")})`, { weight: "700" });
-  ff.load().then((x) => { document.fonts.add(x); if (fontHandle !== null) continueRender(fontHandle); });
-}
 
 const useG = (start: number) => {
   const { t, frame } = useT();
@@ -511,51 +504,80 @@ const TitleFrames: React.FC = () => {
   return <Img src={staticFile(`title/frame_${String(n).padStart(6, "0")}.png`)} style={{ position: "absolute", left: 0, top: 0, width: W, height: H }} />;
 };
 
-/* ============ 9 · TILTWAVE logo finale ============ */
+/* ============ 9 · TILT WAVE STUDIOS logo finale (animated from the supplied logo) ============ */
+// Stripe geometry measured from the supplied logo (icon box 538 px, see work/logo/stripes.json).
+const TW_STRIPES: { x1: number; y1: number; x2: number; y2: number; w: number; c: string }[] = [{"x1": 166.7, "y1": 166.3, "x2": 370.7, "y2": 370.3, "w": 35.4, "c": "#3dd1c0"}, {"x1": 227.0, "y1": 146.5, "x2": 390.5, "y2": 310.0, "w": 34.6, "c": "#c2db4b"}, {"x1": 146.8, "y1": 227.2, "x2": 309.8, "y2": 390.2, "w": 35.4, "c": "#4a89e8"}, {"x1": 295.0, "y1": 133.5, "x2": 403.5, "y2": 242.0, "w": 34.6, "c": "#ed873d"}, {"x1": 134.0, "y1": 295.0, "x2": 242.0, "y2": 403.0, "w": 35.4, "c": "#de355c"}, {"x1": 125.5, "y1": 367.0, "x2": 170.0, "y2": 411.5, "w": 34.6, "c": "#ec873d"}, {"x1": 367.5, "y1": 125.5, "x2": 411.5, "y2": 169.5, "w": 35.4, "c": "#dd355b"}];
+const TW_ORDER = [6, 3, 1, 0, 2, 4, 5]; // draw top-right → bottom-left, like a wave passing through
+
 const SceneLogo: React.FC = () => {
   const { g } = useG(S.logo);
   const d = g - S.logo;
-  const gather = Math.min(1, d / 1.1);
-  const e = 1 - Math.pow(1 - gather, 3);
-  const draw = lerp(g, S.logo + 0.6, S.logo + 1.6, 0, 1);
-  const letters = lerp(g, S.logo + 1.1, S.logo + 1.8, 0, 1);
-  const shine = lerp(g, S.logo + 2.0, S.logo + 2.9, -0.15, 1.15);
-  const lw = 420, lh = lw * 0.58;
-  const pop = 1 + (1 - letters) * 0.08;
+  const icon = 300; // px diameter
+  const k = icon / 538;
+  const left = (W - 1815 * (icon / 538)) / 2; // icon + wordmark span 95 → 1910 px in the supplied logo
+  const ix = left, iy = 540 - icon / 2;
+  const cx = ix + icon / 2, cy = 540;
+  const gather = 1 - Math.pow(1 - Math.min(1, d / 0.75), 3);
+  const pop = (() => { const p = Math.max(0, Math.min(1, (d - 0.35) / 0.55)); const c = 1.7; return p >= 1 ? 1 : 1 + (c + 1) * Math.pow(p - 1, 3) + c * Math.pow(p - 1, 2); })();
+  const wordP = Math.max(0, Math.min(1, (d - 1.75) / 0.7));
+  const wordE = 1 - Math.pow(1 - wordP, 3);
+  const studios = Math.max(0, Math.min(1, (d - 2.3) / 0.6));
+  const glow = Math.max(0, Math.min(1, (d - 1.6) / 0.6));
   return (
-    <AbsoluteFill style={{ background: "radial-gradient(ellipse 60% 60% at 50% 50%, #3a0c08 0%, #1a0405 55%, #070102 100%)" }}>
-      <Glow x={960} y={540} r={520} color="rgba(255,190,90,0.28)" opacity={0.4 + letters * 0.6} />
+    <AbsoluteFill style={{ background: "radial-gradient(ellipse 70% 70% at 45% 50%, #171822 0%, #0d0e14 55%, #050608 100%)" }}>
+      <Glow x={cx} y={cy} r={420} color="rgba(255,190,90,0.35)" opacity={Math.max(0, 1 - d / 1.2)} />
+      <Glow x={cx} y={cy} r={360} color="rgba(90,170,255,0.22)" opacity={glow} />
+      {/* gold particles from the title gather into the icon */}
       <AbsoluteFill style={{ mixBlendMode: "screen" }}>
-        {new Array(90).fill(0).map((_, i) => {
-          const r = (k: string) => random(`lg${k}${i}`);
-          const per = 2 * (lw + lh);
-          let p = r("p") * per;
-          let tx: number, ty: number;
-          if (p < lw) { tx = p; ty = 0; } else if ((p -= lw) < lh) { tx = lw; ty = p; } else if ((p -= lh) < lw) { tx = lw - p; ty = lh; } else { tx = 0; ty = lh - (p - lw); }
-          tx += 960 - lw / 2; ty += 540 - lh / 2;
+        {new Array(80).fill(0).map((_, i) => {
+          const r = (q: string) => random(`tw${q}${i}`);
+          const a = r("a") * Math.PI * 2;
+          const tx = cx + Math.cos(a) * icon * 0.5, ty = cy + Math.sin(a) * icon * 0.5;
           const sx = r("x") * W, sy = r("y") * H;
-          const x = sx + (tx - sx) * e, y = sy + (ty - sy) * e;
-          const o = (1 - Math.max(0, (d - 1.3) / 0.6)) * 0.95;
-          return <div key={i} style={{ position: "absolute", left: x - 2.5, top: y - 2.5, width: 5, height: 5, borderRadius: 3, background: "#ffe8b0", boxShadow: "0 0 10px 3px rgba(255,190,90,0.8)", opacity: Math.max(0, o) }} />;
+          const o = Math.max(0, 1 - Math.max(0, d - 0.7) / 0.35);
+          return <div key={i} style={{ position: "absolute", left: sx + (tx - sx) * gather - 2.5, top: sy + (ty - sy) * gather - 2.5, width: 5, height: 5, borderRadius: 3, background: "#ffe8b0", boxShadow: "0 0 10px 3px rgba(255,190,90,0.8)", opacity: o }} />;
         })}
       </AbsoluteFill>
-      <div style={{ position: "absolute", left: 960 - (lw + 20) / 2, top: 540 - (lh + 20) / 2, transform: `scale(${pop})`, filter: `drop-shadow(0 0 ${12 + letters * 10}px rgba(255,190,90,0.55))` }}>
-        <TWLogo w={lw} draw={draw} letters={letters} shine={shine} stroke={5} />
+      <svg width={W} height={H} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+        <g transform={`translate(${cx} ${cy}) scale(${pop}) rotate(${(1 - pop) * -30}) translate(${-icon / 2} ${-icon / 2}) scale(${k})`}>
+          <circle cx={269} cy={269} r={268.5} fill="#15161c" />
+          {TW_ORDER.map((idx, j) => {
+            const sp = TW_STRIPES[idx];
+            const p = Math.max(0, Math.min(1, (d - 0.75 - j * 0.11) / 0.38));
+            const e = 1 - Math.pow(1 - p, 3);
+            if (e <= 0) return null;
+            const mx = (sp.x1 + sp.x2) / 2, my = (sp.y1 + sp.y2) / 2;
+            const hx = ((sp.x2 - sp.x1) / 2) * e, hy = ((sp.y2 - sp.y1) / 2) * e;
+            const wave = Math.sin((d - 1.9) * 5 - j * 0.7) * 6 * glow;
+            return <line key={idx} x1={mx - hx + wave} y1={my - hy - wave} x2={mx + hx + wave} y2={my + hy - wave} stroke={sp.c} strokeWidth={sp.w} strokeLinecap="round" />;
+          })}
+        </g>
+      </svg>
+      {/* wordmark from the supplied logo, revealed left → right */}
+      <div style={{ position: "absolute", left: ix + 605 * k, top: iy + 135 * k, width: 1210 * k, height: 162 * k, clipPath: `inset(0 ${(1 - wordE) * 100}% 0 0)`, transform: `translateX(${(1 - wordE) * 24}px)` }}>
+        <Img src={staticFile("brand/tiltwave_word.png")} style={{ width: "100%", height: "100%" }} />
       </div>
-      <Petals count={18} seed="lgp" speed={50} size={16} opacity={0.6} />
-      <Vignette strength={0.6} />
+      <div style={{ position: "absolute", left: ix + 605 * k, top: iy + 345 * k, width: 620 * k, height: 80 * k, opacity: studios, transform: `translateY(${(1 - studios) * 12}px)` }}>
+        <Img src={staticFile("brand/tiltwave_studios.png")} style={{ width: "100%", height: "100%" }} />
+      </div>
+      <Vignette strength={0.5} />
     </AbsoluteFill>
   );
 };
 
-/* ============ watermark: the TW mark, bottom-right, clear of the action ============ */
+/* ============ watermark: the animated Tilt Wave icon, bottom-right ============ */
 const Watermark: React.FC = () => {
   const frame = useCurrentFrame();
   const t = frame / FPS;
-  const o = interpolate(t, [0.6, 1.4, S.title - 0.4, S.title], [0, 0.62, 0.62, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const o = interpolate(t, [0.6, 1.4, S.title - 0.4, S.title], [0, 0.85, 0.85, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const D = 74; // circle diameter on screen
+  const vid = (D * 1080) / 779; // the clip's circle spans 779 px of its 1080 px frame
   return (
-    <div style={{ position: "absolute", right: 46, bottom: 38, opacity: o, filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.6))" }}>
-      <TWLogo w={92} stroke={2.4} />
+    <div style={{ position: "absolute", right: 40, bottom: 34, width: D, height: D, borderRadius: "50%", overflow: "hidden", opacity: o, boxShadow: "0 2px 10px rgba(0,0,0,0.45)" }}>
+      <Loop durationInFrames={120}>
+        <OffthreadVideo src={staticFile("brand/tiltwave_icon_animated.mp4")} startFrom={24} muted
+          style={{ position: "absolute", width: vid, height: vid, left: -(150 * vid) / 1080, top: -(151 * vid) / 1080 }} />
+      </Loop>
     </div>
   );
 };

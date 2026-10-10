@@ -1,6 +1,6 @@
 # Mahalaya: Shubho Mahalaya (original animated film)
 
-A 48 s original animated devotional film for Mahalaya, ending on the Tiltwave (TW) logo.
+A 48 s original animated devotional film for Mahalaya, ending on the animated Tilt Wave Studios logo.
 
 - **What's original:** every frame is drawn in code as vector "papercut" illustration. No reference footage and no character-sheet imagery appear in it.
 - **What the references inspired:** the story and settings. That covers the dawn radio broadcast, the misty Ganga with the Howrah bridge and kash, the Goddess taking form against the sun, the dhakis and the boat, and the shiuli flowers.
@@ -34,9 +34,9 @@ The supplied recording, trimmed as follows:
 | 34.3 – 36.7 | Close on the dhakis, drumming on the beats |
 | 36.7 – 39.0 | Shiuli flowers, lotus and diyas |
 | 39.0 – 43.2 | **শুভ মহালয়া / SHUBHO MAHALAYA** |
-| 43.2 – 48.0 | Tiltwave logo transition: particles gather and the TW mark draws in gold |
+| 43.2 – 48.0 | Tilt Wave Studios logo: gold particles gather into the icon, its seven stripes draw in, the wordmark wipes in |
 
-The TW mark appears as a small watermark at the bottom right from 1 s until the title card.
+The supplied animated Tilt Wave icon (`public/brand/tiltwave_icon_animated.mp4`) loops as a round watermark at the bottom right, from 1 s until the title card. The ending is animated from the supplied logo: the stripe geometry is measured into `public/brand/stripes.json`, and the wordmark is cropped from it.
 
 ## Rebuild
 
