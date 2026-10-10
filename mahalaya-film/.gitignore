@@ -1,0 +1,9 @@
+node_modules/
+out/
+work/
+hf/node_modules/
+hf/renders/
+*.log
+public/hf_bengal.mp4
+hf/soundtrack.wav
+hf/snapshots/

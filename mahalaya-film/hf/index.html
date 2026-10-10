@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Cinzel Decorative"; font-weight: 700; src: url("fonts/cinzel-decorative-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cinzel"; font-weight: 500; src: url("fonts/cinzel-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; src: url("fonts/cormorant-garamond-latin-500-italic.woff2") format("woff2"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+      .clip, .layer { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
+      .abs { position: absolute; }
+      .tint { position: absolute; -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x; }
+
+      /* ---------- Scene 6: Bengal at dawn ---------- */
+      #sky { background: linear-gradient(180deg, #2b2a5c 0%, #6b4a86 22%, #d9798a 42%, #f7b08a 56%, #ffe0a8 64%, #ffe9c4 66%); }
+      #sun { left: 1260px; top: 470px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, #fffbea 0%, #ffe6a3 45%, rgba(255,200,120,0) 72%); }
+      #sunbloom { left: 850px; top: 60px; width: 1000px; height: 1000px; border-radius: 50%; background: radial-gradient(circle, rgba(255,214,150,0.65) 0%, rgba(255,180,120,0.2) 40%, rgba(255,160,120,0) 70%); mix-blend-mode: screen; }
+      #rays { background: conic-gradient(from 200deg at 70% 52%, rgba(255,230,180,0) 0deg, rgba(255,230,180,0.25) 4deg, rgba(255,230,180,0) 9deg, rgba(255,230,180,0) 16deg, rgba(255,230,180,0.2) 19deg, rgba(255,230,180,0) 24deg, rgba(255,230,180,0) 34deg, rgba(255,230,180,0.28) 38deg, rgba(255,230,180,0) 44deg, rgba(255,230,180,0) 360deg); filter: blur(8px); mix-blend-mode: screen; opacity: 0.7;
+        -webkit-mask-image: radial-gradient(ellipse 70% 80% at 70% 52%, #000 10%, transparent 75%); mask-image: radial-gradient(ellipse 70% 80% at 70% 52%, #000 10%, transparent 75%); }
+      .cloudtex { -webkit-mask-image: url(clouds_a.png); mask-image: url(clouds_a.png); -webkit-mask-size: 2560px 560px; mask-size: 2560px 560px; }
+      .misttex { -webkit-mask-image: url(mist.png); mask-image: url(mist.png); -webkit-mask-size: 2560px 300px; mask-size: 2560px 300px; }
+      #river { left: 0; top: 712px; width: 1920px; height: 368px; background: linear-gradient(180deg, #f2c49a 0%, #c9879a 30%, #6d5a8a 70%, #2f3060 100%); }
+      #glint { left: 1270px; top: 712px; width: 160px; height: 368px; }
+      .glint { position: absolute; height: 2px; border-radius: 2px; background: #fff3d6; filter: blur(2.5px); }
+      .diya { position: absolute; width: 34px; height: 12px; border-radius: 0 0 17px 17px; background: #7a3418; }
+      .diya i { position: absolute; left: 12px; top: -16px; width: 10px; height: 18px; border-radius: 50% 50% 45% 45%; background: radial-gradient(ellipse at 50% 70%, #fff6c8 0%, #ffb23a 55%, rgba(255,120,20,0) 75%); }
+      .diya b { position: absolute; left: -18px; top: -30px; width: 70px; height: 60px; border-radius: 50%; background: radial-gradient(circle, rgba(255,190,90,0.55), rgba(255,160,60,0) 70%); mix-blend-mode: screen; }
+      .bird { position: absolute; width: 28px; height: 12px; }
+      .kash { position: absolute; bottom: 0; transform-origin: 50% 100%; }
+      #toran { left: 0; top: -10px; width: 1920px; height: 220px; }
+      .bell { position: absolute; top: 40px; width: 70px; transform-origin: 50% 0%; filter: drop-shadow(0 6px 10px rgba(60,20,0,0.4)); }
+
+      /* Divine family over the river */
+      #family { left: 0; top: 0; width: 1920px; height: 1080px; }
+      #family img { position: absolute; }
+      #famglow { left: 460px; top: 60px; width: 1000px; height: 800px; border-radius: 50%; background: radial-gradient(ellipse, rgba(255,226,160,0.9) 0%, rgba(255,200,120,0.35) 40%, rgba(255,190,110,0) 70%); mix-blend-mode: screen; }
+      #reflect { left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 50% 712px; }
+
+      /* ---------- Final: Shubho Mahalaya ---------- */
+      #finalbg { background: radial-gradient(ellipse 70% 75% at 50% 38%, #f6c36a 0%, #c2561c 35%, #6a0f12 70%, #260407 100%); }
+      #fhalo { left: 560px; top: -60px; width: 800px; height: 800px; border-radius: 50%; background: radial-gradient(circle, rgba(255,240,200,0.95) 0%, rgba(255,214,140,0.55) 30%, rgba(255,190,110,0) 68%); }
+      #mandala { left: 580px; top: -40px; width: 760px; height: 760px; }
+      #fdurga { left: 715px; top: 58px; width: 490px; }
+      #floor { left: 0; top: 560px; width: 1920px; height: 520px; background: linear-gradient(180deg, rgba(38,4,7,0) 0%, rgba(38,4,7,0.75) 32%, rgba(30,3,6,0.92) 100%); }
+      #title { left: 0; top: 708px; width: 1920px; text-align: center; font-family: "Cinzel Decorative", serif; font-weight: 700; font-size: 112px; letter-spacing: 0.06em; line-height: 1.15; white-space: nowrap; }
+      #title span { display: inline-block; background: linear-gradient(180deg, #fff6d8 0%, #ffd77a 38%, #d79a2b 62%, #ffe6a6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 18px rgba(255,190,90,0.55)) drop-shadow(0 3px 2px rgba(60,10,0,0.7)); }
+      #title .sp { width: 0.42em; }
+      #divider { left: 610px; top: 862px; width: 700px; height: 30px; transform-origin: 50% 50%; }
+      #subtitle { left: 0; top: 896px; width: 1920px; text-align: center; font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 500; font-size: 44px; color: #ffe9c2; letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(40,5,0,0.9); }
+      #fadeout { background: #000; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="13.75" data-width="1920" data-height="1080">
+
+      <!-- ===== SCENE 6 — MAHALAYA: MAA IS COMING HOME (36.0s → 43.72s on the master) ===== -->
+      <div id="s6" class="clip" data-start="0" data-duration="8.6" data-track-index="0">
+        <div id="world" class="layer">
+          <div id="sky" class="layer"></div>
+          <div id="sunbloom" class="abs"></div>
+          <div id="sun" class="abs"></div>
+          <div id="rays" class="layer"></div>
+          <div id="cloudsFar" data-layout-allow-overflow class="abs cloudtex" style="left:0;top:40px;width:5120px;height:560px;background:#ffd7b8;opacity:0.55"></div>
+          <div id="cloudsNear" data-layout-allow-overflow class="abs cloudtex" style="left:-900px;top:140px;width:5120px;height:560px;background:#a66a8e;opacity:0.4"></div>
+          <div id="birds" class="layer"></div>
+          <svg id="farbank" class="abs" width="1920" height="1080" style="left:0;top:0"></svg>
+          <div id="family" class="abs">
+            <div id="famglow" data-layout-allow-overflow class="abs"></div>
+            <img id="f-ganesha" src="ganesha.png" style="left:330px;top:345px;width:200px" />
+            <img id="f-lakshmi" src="lakshmi.png" style="left:545px;top:330px;width:186px" />
+            <img id="f-durga" src="durga_trio.png" style="left:760px;top:150px;width:400px" />
+            <img id="f-saraswati" src="saraswati.png" style="left:1180px;top:318px;width:218px" />
+            <img id="f-kartikeya" src="kartikeya.png" style="left:1405px;top:345px;width:182px" />
+          </div>
+          <div id="river" class="abs"></div>
+          <div id="reflect" class="abs" style="opacity:0"></div>
+          <div id="glint" class="abs"></div>
+          <div id="mistA" data-layout-allow-overflow class="abs misttex" style="left:0;top:600px;width:5120px;height:300px;background:#fff0e0;opacity:0.75"></div>
+          <div id="diyas" class="layer"></div>
+          <div id="mistB" data-layout-allow-overflow class="abs misttex" style="left:-1400px;top:820px;width:5120px;height:300px;background:#ffe8d6;opacity:0.45"></div>
+          <svg id="bank" class="abs" width="1920" height="1080" style="left:0;top:0"><path d="M-20 1080 L-20 975 Q 300 940 620 968 Q 760 985 860 1080 Z" fill="#3a2a22"/><path d="M1180 1080 Q 1330 975 1600 962 Q 1800 955 1940 975 L1940 1080 Z" fill="#3a2a22"/></svg>
+          <svg id="dhaks" class="abs" width="1920" height="1080" style="left:0;top:0"></svg>
+          <div id="kashBack" class="layer"></div>
+          <div id="kashFront" class="layer"></div>
+        </div>
+        <svg id="toran" data-layout-allow-overflow class="abs" viewBox="0 0 1920 220"></svg>
+        <img class="bell" id="bellL" src="bell.png" style="left:150px" />
+        <img class="bell" id="bellR" src="bell.png" style="left:1700px" />
+      </div>
+
+      <!-- ===== FINAL — SHUBHO MAHALAYA (43.72s → 49.75s on the master) ===== -->
+      <div id="fin" class="clip" data-start="7.2" data-duration="6.55" data-track-index="1">
+        <div id="finalbg" class="layer"></div>
+        <div id="fhalo" data-layout-allow-overflow class="abs"></div>
+        <svg id="mandala" data-layout-allow-overflow class="abs" viewBox="-260 -260 520 520"></svg>
+        <div id="fpetalsBack" class="layer"></div>
+        <img id="fdurga" class="abs" src="durga_trio.png" />
+        <div id="floor" class="abs"></div>
+        <div id="fpetals" class="layer"></div>
+        <div id="title" class="abs" aria-label="SHUBHO MAHALAYA"></div>
+        <svg id="divider" class="abs" viewBox="0 0 700 30">
+          <line x1="0" y1="15" x2="300" y2="15" stroke="#e8b85a" stroke-width="1.6" />
+          <line x1="400" y1="15" x2="700" y2="15" stroke="#e8b85a" stroke-width="1.6" />
+          <path d="M350 3 L362 15 L350 27 L338 15 Z" fill="none" stroke="#ffd77a" stroke-width="1.6" />
+          <circle cx="350" cy="15" r="3" fill="#ffd77a" />
+          <circle cx="318" cy="15" r="2.4" fill="#e8b85a" /><circle cx="382" cy="15" r="2.4" fill="#e8b85a" />
+        </svg>
+        <div id="subtitle" class="abs">May light triumph over darkness, and goodness prevail.</div>
+      </div>
+
+      <div id="fadeout" class="clip" data-start="12.65" data-duration="1.1" data-track-index="2"></div>
+    </div>
+
+    <script>
+      // Deterministic PRNG (no Math.random — renders must be reproducible)
+      function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+      const NS = "http://www.w3.org/2000/svg";
+      const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+      const D = 13.75;
+      const tl = gsap.timeline({ paused: true });
+
+      /* ---------- far bank: ridge, Bengali at-chala temple, coconut palms, boat ---------- */
+      (function farbank() {
+        const svg = document.getElementById("farbank");
+        const r = rng(11);
+        let d = "M0 716 ";
+        for (let x = 0; x <= 1920; x += 24) d += `L${x} ${700 - 18 * Math.sin(x / 210) - 10 * Math.sin(x / 67 + 1) - r() * 4} `;
+        d += "L1920 716 Z";
+        el("path", { d, fill: "#6e5277", opacity: 0.85 }, svg);
+        // at-chala temple (curved Bengali roof) on the far bank
+        const tx = 520, ty = 702;
+        const g = el("g", { fill: "#4e3554" }, svg);
+        el("path", { d: `M${tx - 70} ${ty} L${tx - 70} ${ty - 60} L${tx + 70} ${ty - 60} L${tx + 70} ${ty} Z` }, g);
+        el("path", { d: `M${tx - 92} ${ty - 52} Q ${tx} ${ty - 82} ${tx + 92} ${ty - 52} L${tx + 60} ${ty - 100} Q ${tx} ${ty - 118} ${tx - 60} ${ty - 100} Z` }, g);
+        el("path", { d: `M${tx - 52} ${ty - 102} Q ${tx} ${ty - 122} ${tx + 52} ${ty - 102} L${tx + 30} ${ty - 140} Q ${tx} ${ty - 150} ${tx - 30} ${ty - 140} Z` }, g);
+        el("path", { d: `M${tx - 26} ${ty - 140} Q ${tx} ${ty - 150} ${tx + 26} ${ty - 140} L${tx} ${ty - 176} Z` }, g);
+        el("rect", { x: tx - 1.5, y: ty - 196, width: 3, height: 22 }, g);
+        el("path", { d: `M${tx + 1.5} ${ty - 196} l 16 5 l -16 5 Z` }, g);
+        for (let i = -1; i <= 1; i++) el("path", { d: `M${tx + i * 34 - 12} ${ty} L${tx + i * 34 - 12} ${ty - 34} Q ${tx + i * 34} ${ty - 48} ${tx + i * 34 + 12} ${ty - 34} L${tx + i * 34 + 12} ${ty} Z`, fill: "#2c1c33" }, svg);
+        // coconut palms
+        [[150, 0.9], [250, 0.75], [860, 0.7], [1660, 1], [1780, 0.8]].forEach(([px, s], k) => {
+          const pg = el("g", { fill: "none", stroke: "#3b2742", "stroke-linecap": "round" }, svg);
+          const h = 210 * s, bx = px, by = 708;
+          const topx = bx + 26 * s * (k % 2 ? 1 : -1), topy = by - h;
+          el("path", { d: `M${bx} ${by} Q ${bx + 4} ${by - h * 0.5} ${topx} ${topy}`, "stroke-width": 7 * s }, pg);
+          for (let f = 0; f < 9; f++) {
+            const a = (f / 9) * Math.PI * 2 + 0.3;
+            const len = 80 * s;
+            const ex = topx + Math.cos(a) * len, ey = topy + Math.sin(a) * len * 0.45 + 30 * s;
+            el("path", { d: `M${topx} ${topy} Q ${(topx + ex) / 2} ${Math.min(topy, ey) - 26 * s} ${ex} ${ey}`, "stroke-width": 5 * s }, pg);
+          }
+        });
+        // a lone fishing boat
+        el("path", { d: "M1000 744 Q 1060 760 1130 744 L1120 752 Q 1062 764 1008 752 Z", fill: "#2c2238" }, svg);
+        el("path", { d: "M1060 744 L1060 690 L1092 740 Z", fill: "#3e3150", opacity: 0.9 }, svg);
+      })();
+
+      /* ---------- glints on the river under the sun ---------- */
+      (function glints() {
+        const g = document.getElementById("glint"); const r = rng(5);
+        for (let i = 0; i < 26; i++) {
+          const s = document.createElement("div"); s.className = "glint";
+          const y = Math.pow(i / 26, 1.25) * 330 + 4 + r() * 8; const w = 40 + (1 - i / 26) * 30 + r() * 50;
+          s.style.top = y + "px"; s.style.left = (80 - w / 2 + (r() - 0.5) * 30) + "px"; s.style.width = w + "px";
+          g.appendChild(s);
+          tl.fromTo(s, { opacity: 0.08 }, { opacity: 0.6, duration: 0.35 + r() * 0.5, ease: "sine.inOut", yoyo: true, repeat: 23 }, r() * 0.6);
+        }
+      })();
+
+      /* ---------- floating diyas ---------- */
+      (function diyas() {
+        const host = document.getElementById("diyas"); const r = rng(9);
+        for (let i = 0; i < 16; i++) {
+          const d = document.createElement("div"); d.className = "diya";
+          const y = 760 + r() * 260; const sc = 0.5 + ((y - 760) / 260) * 0.9;
+          d.style.left = (r() * 1900) + "px"; d.style.top = y + "px"; d.style.transform = `scale(${sc})`;
+          d.innerHTML = "<b></b><i></i>"; host.appendChild(d);
+          tl.to(d, { x: 60 + r() * 80, duration: 8.6, ease: "none" }, 0);
+          tl.fromTo(d, { y: -3 }, { y: 3, duration: 1.1 + r(), ease: "sine.inOut", yoyo: true, repeat: 7 }, 0);
+          tl.fromTo(d.querySelector("i"), { scaleY: 0.85 }, { scaleY: 1.15, duration: 0.18 + r() * 0.12, ease: "sine.inOut", yoyo: true, repeat: 41 }, 0);
+        }
+      })();
+
+      /* ---------- birds crossing the dawn sky ---------- */
+      (function birds() {
+        const host = document.getElementById("birds"); const r = rng(21);
+        for (let i = 0; i < 7; i++) {
+          const b = document.createElementNS(NS, "svg"); b.setAttribute("class", "bird"); b.setAttribute("viewBox", "0 0 28 12");
+          b.innerHTML = '<path d="M0 6 Q7 0 14 7 Q21 0 28 6" fill="none" stroke="#3a2a48" stroke-width="2" stroke-linecap="round"/>';
+          b.style.left = (200 + i * 40 + r() * 60) + "px"; b.style.top = (230 + r() * 120) + "px";
+          host.appendChild(b);
+          tl.to(b, { x: 1300, y: -120 - r() * 60, duration: 8.6, ease: "none" }, 0);
+          tl.fromTo(b, { scaleY: 1 }, { scaleY: 0.4, duration: 0.22, yoyo: true, repeat: 38, ease: "sine.inOut" }, r() * 0.2);
+        }
+      })();
+
+      /* ---------- dhak drums (with kash-white plumes) on the near bank ---------- */
+      (function dhaks() {
+        const svg = document.getElementById("dhaks");
+        [[470, 930, 0.62], [560, 948, 0.52]].forEach(([x, y, s], i) => {
+          const g = el("g", { id: "dhak" + i, transform: `translate(${x} ${y}) scale(${s})` }, svg);
+          el("ellipse", { cx: 0, cy: 0, rx: 52, ry: 70, fill: "#5a1c12" }, g);
+          el("ellipse", { cx: -48, cy: 0, rx: 10, ry: 68, fill: "#f2e3c8" }, g);
+          el("ellipse", { cx: 48, cy: 0, rx: 10, ry: 68, fill: "#e8d6b6" }, g);
+          for (let k = -2; k <= 2; k++) el("line", { x1: -46, y1: k * 26, x2: 46, y2: -k * 26, stroke: "#c99a4a", "stroke-width": 2 }, g);
+          for (let k = 0; k < 9; k++) {
+            const a = -Math.PI / 2 + (k - 4) * 0.16;
+            el("path", { d: `M0 -70 Q ${Math.cos(a) * 40} ${-70 + Math.sin(a) * 60} ${Math.cos(a) * 70} ${-70 + Math.sin(a) * 110}`, stroke: "#fffaf0", "stroke-width": 7, fill: "none", "stroke-linecap": "round", opacity: 0.9 }, g);
+          }
+        });
+      })();
+
+      /* ---------- kash flowers (Saccharum spontaneum) swaying in the breeze ---------- */
+      function kashField(hostId, seed, n, xRange, hRange, scaleBase, color) {
+        const host = document.getElementById(hostId); const r = rng(seed);
+        for (let i = 0; i < n; i++) {
+          const h = hRange[0] + r() * (hRange[1] - hRange[0]);
+          const w = 120;
+          const s = document.createElementNS(NS, "svg");
+          s.setAttribute("class", "kash"); s.setAttribute("width", w); s.setAttribute("height", h); s.setAttribute("viewBox", `0 0 ${w} ${h}`);
+          const lean = (r() - 0.5) * 30;
+          let inner = `<path d="M${w / 2} ${h} Q ${w / 2 + lean * 0.3} ${h * 0.5} ${w / 2 + lean} ${h * 0.32}" stroke="#7b6a4a" stroke-width="2.2" fill="none"/>`;
+          inner += `<path d="M${w / 2} ${h} Q ${w / 2 - 30} ${h * 0.7} ${w / 2 - 44} ${h * 0.55}" stroke="#6f7a3e" stroke-width="2" fill="none" opacity="0.8"/>`;
+          const px = w / 2 + lean, py = h * 0.32;
+          inner += `<path d="M${px} ${py} Q ${px + lean * 0.2} ${py - h * 0.18} ${px + lean * 0.5} ${py - h * 0.3}" stroke="${color}" stroke-width="1.2" fill="none" opacity="0.7"/>`;
+          for (let k = 0; k < 44; k++) {
+            const u = k / 44; const yy = py - u * h * 0.3; const xx = px + lean * 0.5 * u * u;
+            const spread = 3 + Math.sin(Math.min(1, u * 1.3) * Math.PI) * 11;
+            const droop = 10 + r() * 10;
+            inner += `<path d="M${xx} ${yy} q ${-spread * 0.6} ${-3} ${-spread} ${-droop}" stroke="${color}" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="${0.35 + r() * 0.4}"/>`;
+            inner += `<path d="M${xx} ${yy} q ${spread * 0.6} ${-3} ${spread} ${-droop}" stroke="${color}" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="${0.35 + r() * 0.4}"/>`;
+          }
+          inner += `<ellipse cx="${px + lean * 0.25}" cy="${py - h * 0.15}" rx="9" ry="${h * 0.16}" fill="${color}" opacity="0.18" transform="rotate(${lean * 0.5} ${px} ${py})"/>`;
+          s.innerHTML = `<g style="filter: blur(${hostId === "kashFront" ? 0.9 : 0.3}px) drop-shadow(0 0 4px rgba(255,240,220,0.5))">${inner}</g>`;
+          const x = xRange[0] + r() * (xRange[1] - xRange[0]);
+          s.style.left = (x - w / 2) + "px";
+          s.style.transform = `scale(${scaleBase})`;
+          host.appendChild(s);
+          const amp = 3 + r() * 4; const per = 1.2 + r() * 0.9;
+          tl.fromTo(s, { rotation: -amp }, { rotation: amp, duration: per, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(8.6 / per) }, -r() * per + per);
+          tl.set(s, { rotation: -amp }, 0);
+        }
+      }
+      kashField("kashBack", 3, 46, [-40, 640], [300, 480], 1, "#f4ece0");
+      kashField("kashBack", 4, 40, [1320, 1960], [300, 480], 1, "#f4ece0");
+      kashField("kashFront", 7, 22, [-60, 380], [520, 700], 1, "#fffaf2");
+      kashField("kashFront", 8, 20, [1560, 1980], [520, 700], 1, "#fffaf2");
+
+      /* ---------- marigold toran with mango leaves ---------- */
+      (function toran() {
+        const svg = document.getElementById("toran");
+        const pts = []; for (let i = 0; i <= 60; i++) { const x = i * 32; pts.push([x, 36 + 46 * Math.sin((x / 1920) * Math.PI)]); }
+        el("path", { d: "M" + pts.map((p) => p.join(" ")).join(" L"), stroke: "#7a4a1a", "stroke-width": 2, fill: "none" }, svg);
+        pts.forEach(([x, y], i) => {
+          if (i % 3 === 0) el("path", { d: `M${x} ${y} q -10 24 0 46 q 10 -22 0 -46 Z`, fill: "#3f7a2a" }, svg);
+          el("circle", { cx: x + 10, cy: y + 3, r: 12, fill: i % 2 ? "#f39a1c" : "#f5c518" }, svg);
+          el("circle", { cx: x + 10, cy: y + 3, r: 5, fill: i % 2 ? "#d76b10" : "#e0a210" }, svg);
+        });
+      })();
+
+      /* ---------- final mandala ---------- */
+      (function mandala() {
+        const svg = document.getElementById("mandala");
+        const petals = (g, n, r0, r1, w) => { for (let i = 0; i < n; i++) el("path", { transform: `rotate(${(i / n) * 360})`, d: `M0 ${-r0} C ${w} ${-(r0 + r1) / 2} ${w * 0.6} ${-r1} 0 ${-r1} C ${-w * 0.6} ${-r1} ${-w} ${-(r0 + r1) / 2} 0 ${-r0} Z`, fill: "none", stroke: "#ffe2a0", "stroke-width": 1.6 }, g); };
+        const a = el("g", { id: "mandA", style: "filter: drop-shadow(0 0 6px #ffd27a)" }, svg); petals(a, 24, 150, 232, 22); el("circle", { r: 238, fill: "none", stroke: "#ffe2a0", "stroke-width": 2 }, a);
+        const b = el("g", { id: "mandB", style: "filter: drop-shadow(0 0 6px #ffd27a)" }, svg); petals(b, 16, 92, 148, 26); el("circle", { r: 150, fill: "none", stroke: "#ffe2a0", "stroke-width": 1.2 }, b);
+      })();
+
+      /* ---------- petals for the final tableau ---------- */
+      function petalRain(hostId, seed, n, start, dur, blur) {
+        const host = document.getElementById(hostId); const r = rng(seed);
+        const cols = ["#d8341f", "#f08a1c", "#f7b32b", "#e9506b", "#c2181f", "#fff4e0"];
+        for (let i = 0; i < n; i++) {
+          const s = document.createElementNS(NS, "svg"); const sz = 16 + r() * 18;
+          s.setAttribute("width", sz); s.setAttribute("height", sz * 1.3); s.setAttribute("viewBox", "0 0 20 26");
+          s.style.position = "absolute"; s.style.left = (r() * 1920) + "px"; s.style.top = "-60px";
+          if (blur) s.style.filter = `blur(${blur}px)`;
+          s.innerHTML = `<path d="M10 1 C17 6 19 15 10 25 C1 15 3 6 10 1 Z" fill="${cols[Math.floor(r() * cols.length)]}"/>`;
+          host.appendChild(s);
+          const fall = 4 + r() * 3; const off = r() * fall; const dx = (r() - 0.5) * 240; const r0 = r() * 360; const spin = 200 + r() * 300;
+          for (let k = 0; k < 3; k++) {
+            tl.fromTo(s, { y: -60, x: 0, rotation: r0 }, { y: 1200, x: dx, rotation: r0 + spin, duration: fall, ease: "none", immediateRender: k === 0 }, start - off + k * fall);
+          }
+        }
+      }
+
+      /* ======================= TIMELINE ======================= */
+      // Scene 6: slow aerial push across the river at dawn
+      tl.fromTo("#world", { scale: 1.05, x: 30, y: 10 }, { scale: 1.12, x: -40, y: -12, duration: 8.6, ease: "sine.inOut" }, 0);
+      tl.fromTo("#sun", { y: 70 }, { y: -40, duration: 8.6, ease: "sine.out" }, 0);
+      tl.fromTo("#sunbloom", { opacity: 0.6, scale: 0.9 }, { opacity: 1, scale: 1.1, duration: 8.6, ease: "sine.out" }, 0);
+      tl.fromTo("#cloudsFar", { x: 0 }, { x: -220, duration: 8.6, ease: "none" }, 0);
+      tl.fromTo("#cloudsNear", { x: 0 }, { x: -380, duration: 8.6, ease: "none" }, 0);
+      tl.fromTo("#mistA", { x: 0 }, { x: -320, duration: 8.6, ease: "none" }, 0);
+      tl.fromTo("#mistB", { x: 0 }, { x: 260, duration: 8.6, ease: "none" }, 0);
+
+      // dhak + bells answer the 37.5s / 38.3s / 38.5s accents (local 1.5, 1.616, 2.278, 2.499, 2.8)
+      [1.5, 1.616, 2.278, 2.499, 2.8, 4.925].forEach((b, i) => {
+        tl.fromTo(["#dhak0", "#dhak1"], { scale: 1.06 }, { scale: 1, duration: 0.11, ease: "power2.out", svgOrigin: "0 0", immediateRender: i === 0 }, b);
+      });
+      tl.set("#bellL", { rotation: 0 }, 0); tl.set("#bellR", { rotation: 0 }, 0);
+      tl.to("#bellL", { rotation: 14, duration: 0.28, ease: "power2.out" }, 1.5).to("#bellL", { rotation: -10, duration: 0.6, ease: "sine.inOut" }, 1.78).to("#bellL", { rotation: 7, duration: 0.6, ease: "sine.inOut" }, 2.38).to("#bellL", { rotation: -4, duration: 0.6, ease: "sine.inOut" }, 2.98).to("#bellL", { rotation: 0, duration: 0.8, ease: "sine.inOut" }, 3.58);
+      tl.to("#bellR", { rotation: -14, duration: 0.28, ease: "power2.out" }, 1.616).to("#bellR", { rotation: 10, duration: 0.6, ease: "sine.inOut" }, 1.9).to("#bellR", { rotation: -7, duration: 0.6, ease: "sine.inOut" }, 2.5).to("#bellR", { rotation: 4, duration: 0.6, ease: "sine.inOut" }, 3.1).to("#bellR", { rotation: 0, duration: 0.8, ease: "sine.inOut" }, 3.7);
+
+      // the divine family appears over the river (from the 37.5s accent)
+      tl.set("#family", { opacity: 0 }, 0);
+      tl.fromTo("#family", { opacity: 0, y: 40, scale: 0.97 }, { opacity: 0.96, y: 0, scale: 1, duration: 2.4, ease: "power2.out" }, 1.55);
+      ["#f-ganesha", "#f-lakshmi", "#f-saraswati", "#f-kartikeya"].forEach((id, i) =>
+        tl.fromTo(id, { opacity: 0 }, { opacity: 1, duration: 1.2, ease: "sine.out" }, 2.278 + (i % 2) * 0.22));
+      tl.fromTo("#famglow", { opacity: 0.4, scale: 0.9 }, { opacity: 1, scale: 1.05, duration: 3, ease: "sine.inOut" }, 1.5);
+      // divine reflection on the water
+      (function () {
+        const ref = document.getElementById("reflect");
+        const fam = document.getElementById("family").cloneNode(true); fam.removeAttribute("id");
+        fam.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+        fam.style.transform = "scaleY(-1)"; fam.style.transformOrigin = "50% 712px"; fam.style.filter = "blur(3px)";
+        ref.appendChild(fam);
+        const m = "linear-gradient(180deg, transparent 0%, transparent 66%, rgba(0,0,0,0.45) 68%, transparent 92%)";
+        ref.style.webkitMaskImage = m; ref.style.maskImage = m;
+      })();
+      tl.fromTo("#reflect", { opacity: 0 }, { opacity: 0.55, duration: 2.4, ease: "power2.out" }, 1.9);
+
+      // Final: Shubho Mahalaya
+      tl.fromTo("#fin", { opacity: 0 }, { opacity: 1, duration: 0.55, ease: "sine.inOut" }, 7.2);
+      tl.fromTo("#fdurga", { scale: 1.06, y: 14 }, { scale: 1, y: 0, duration: 6.55, ease: "sine.out" }, 7.2);
+      tl.fromTo("#fhalo", { scale: 0.85, opacity: 0.6 }, { scale: 1.08, opacity: 1, duration: 6.55, ease: "sine.inOut" }, 7.2);
+      tl.fromTo("#mandA", { rotation: 0 }, { rotation: 40, duration: 6.55, ease: "none", svgOrigin: "0 0" }, 7.2);
+      tl.fromTo("#mandB", { rotation: 0 }, { rotation: -60, duration: 6.55, ease: "none", svgOrigin: "0 0" }, 7.2);
+      petalRain("fpetalsBack", 31, 22, 7.2, 6.55, 2.5);
+      petalRain("fpetals", 32, 26, 7.2, 6.55, 0);
+
+      // title, letter by letter, from the 43.72s accent
+      (function title() {
+        const host = document.getElementById("title");
+        const text = "SHUBHO MAHALAYA";
+        for (const ch of text) { const s = document.createElement("span"); if (ch === " ") { s.className = "sp"; s.innerHTML = "&nbsp;"; } else s.textContent = ch; host.appendChild(s); }
+        tl.fromTo("#title span", { opacity: 0, y: 26, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power3.out", stagger: 0.055 }, 7.75);
+      })();
+      tl.fromTo("#divider", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 1.0, ease: "power2.out" }, 8.95);
+      tl.fromTo("#subtitle", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 1.1, ease: "power2.out" }, 9.28);
+
+      // gentle visual fade at the very end (audio fades in the master over 46.25 → 49.75)
+      tl.fromTo("#fadeout", { opacity: 0 }, { opacity: 1, duration: 1.1, ease: "sine.in" }, 12.65);
+
+      tl.to({}, { duration: 0.001 }, D - 0.001);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
