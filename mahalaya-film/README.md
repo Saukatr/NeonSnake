@@ -1,6 +1,6 @@
 # Mahalaya: Shubho Mahalaya (original animated film)
 
-A 44.5 s original animated devotional film for Mahalaya.
+A 48 s original animated devotional film for Mahalaya, ending on the Tiltwave (TW) logo.
 
 - **What's original:** every frame is drawn in code as vector "papercut" illustration. No reference footage and no character-sheet imagery appear in it.
 - **What the references inspired:** the story and settings. That covers the dawn radio broadcast, the misty Ganga with the Howrah bridge and kash, the Goddess taking form against the sun, the dhakis and the boat, and the shiuli flowers.
@@ -14,21 +14,29 @@ A 44.5 s original animated devotional film for Mahalaya.
 
 The supplied recording, trimmed as follows:
 - The leading 1.27 s of silence is removed.
-- It is cut to 44.5 s.
-- A 5 s **quarter-sine fade-out** runs from 39.5 to 44.5 s. It reaches silence on the final frame as the picture fades to black.
+- It is cut to 48 s.
+- A 5 s **quarter-sine fade-out** runs from 43 to 48 s. It reaches silence on the final frame as the picture fades to black.
 
 ## Story and sync (seconds)
 
-| Time | Scene | Sync |
-|---|---|---|
-| 0 – 6.7 | Dawn in a Bengal village; a radio carries the Mahalaya broadcast in golden waves | waves swell on 3.4 / 3.8 / 4.3 / 4.6 / 5.4 |
-| 6.7 – 13.0 | The misty Ganga: Howrah bridge, kash, a boat with a small pratima; darkness creeps in from 12.0 | dissolve on 6.7 |
-| 13.0 – 15.5 | Darkness rises: storm, a horned shadow with burning eyes | lightning on 13.5 / 13.9 / 14.7 |
-| 15.5 – 21.8 | The Goddess takes form against the sun; ten arms emerge, each with its weapon; the third eye opens | burst on 15.48 (strongest hit); one arm per beat 16.1 → 20.6 |
-| 21.8 – 30.0 | Light against darkness: her trident's beam drives back the shadow | sparks on 24.9 – 29.6, clash 26.96, strike 30.01 |
-| 30.0 – 36.7 | Maa is coming home: dhakis march through kash by the river at sunrise | drumsticks strike on the beats |
-| 36.7 – 39.0 | Shiuli flowers fall; lotus and diyas | dissolve |
-| 39.0 – 44.5 | The Goddess in a sun mandala; **শুভ মহালয়া / SHUBHO MAHALAYA**; fade to black | title from 39.2 |
+| Time | Scene |
+|---|---|
+| 0 – 2.2 | Hook: the sun breaks the horizon over a Bengal village |
+| 2.2 – 4.3 | Close-up: the radio on the windowsill comes alive (golden waves on 3.36) |
+| 4.3 – 6.7 | The village wakes: waves ripple out from the radio in the house's window |
+| 6.7 – 13.0 | The misty Ganga: Howrah bridge, kash, a boat; storm gathers and Mahishasura begins to form in it |
+| 13.0 – 15.5 | Mahishasura condenses out of the smoke: horns, iron crown, molten cracks; eyes ignite with the lightning |
+| 15.5 – 21.8 | The Goddess takes form against the sun; one arm per beat; the third eye opens |
+| 21.8 – 30.0 | Light against darkness; strike on 30.01 |
+| 30.0 – 32.0 | The darkness shatters to gold; the boat brings Maa home |
+| 32.0 – 33.3 | The pratima carried through the kash |
+| 33.3 – 34.3 | Maa rides in on the elephant |
+| 34.3 – 36.7 | Close on the dhakis, drumming on the beats |
+| 36.7 – 39.0 | Shiuli flowers, lotus and diyas |
+| 39.0 – 43.2 | **শুভ মহালয়া / SHUBHO MAHALAYA** |
+| 43.2 – 48.0 | Tiltwave logo transition: particles gather and the TW mark draws in gold |
+
+The TW mark appears as a small watermark at the bottom right from 1 s until the title card.
 
 ## Rebuild
 

@@ -481,3 +481,151 @@ export const SunMandala: React.FC<{ r: number; rot: number; color?: string; core
     <circle r={r * 0.8} fill="none" stroke="#e9861a" strokeWidth={2} strokeDasharray="3 9" transform={`rotate(${-rot * 2})`} />
   </g>
 );
+
+/* ---------------- Mahishasura: the buffalo-demon of darkness (original silhouette) ----------------
+   Origin at the centre of the head. `form` 0..1 condenses him out of smoke; `eyes` ignites the eyes. */
+export const Demon: React.FC<{ t: number; form?: number; eyes?: number; s?: number; heat?: number }> = ({ t, form = 1, eyes = 1, s = 1, heat = 0 }) => {
+  const breathe = 1 + Math.sin(t * 2.1) * 0.015;
+  const blurPx = (1 - form) * 22;
+  const lava = 0.55 + 0.45 * Math.sin(t * 3.3) + heat;
+  return (
+    <g transform={`scale(${s * (0.86 + 0.14 * form) * breathe})`}>
+      {/* smoke he condenses out of */}
+      <g style={{ filter: "blur(18px)" }} opacity={0.55 + (1 - form) * 0.45}>
+        {new Array(10).fill(0).map((_, i) => {
+          const a = (i / 10) * Math.PI * 2 + t * 0.25;
+          const rr = 200 + (1 - form) * 120;
+          return <ellipse key={i} cx={Math.cos(a) * rr} cy={150 + Math.sin(a) * rr * 0.55} rx={190} ry={120} fill="#0d0407" />;
+        })}
+      </g>
+      <g opacity={form} style={{ filter: `blur(${blurPx}px) drop-shadow(0 0 ${10 + heat * 10}px rgba(255,40,16,${0.75 * form}))` }}>
+        {/* shoulders + chest */}
+        <path d="M-360 440 C -350 260 -280 170 -160 128 C -118 112 -96 88 -86 64 L 86 64 C 96 88 118 112 160 128 C 280 170 350 260 360 440 Z" fill="#0a0305" />
+        {/* horns */}
+        <path d="M-74 -96 C -160 -104 -246 -150 -276 -262 C -288 -306 -266 -340 -242 -352 C -232 -276 -190 -206 -58 -138 Z" fill="#120507" />
+        <path d="M74 -96 C 160 -104 246 -150 276 -262 C 288 -306 266 -340 242 -352 C 232 -276 190 -206 58 -138 Z" fill="#120507" />
+        <path d="M-240 -330 C -232 -270 -196 -210 -96 -146" stroke="#5a1410" strokeWidth={3} fill="none" opacity={0.8} />
+        <path d="M240 -330 C 232 -270 196 -210 96 -146" stroke="#5a1410" strokeWidth={3} fill="none" opacity={0.8} />
+        {/* ears */}
+        <path d="M-92 -54 C -150 -70 -176 -40 -184 -20 C -150 -18 -118 -24 -90 -30 Z M92 -54 C 150 -70 176 -40 184 -20 C 150 -18 118 -24 90 -30 Z" fill="#0c0406" />
+        {/* head + broad buffalo muzzle */}
+        <path d="M-84 72 C -114 20 -116 -62 -88 -112 C -62 -154 62 -154 88 -112 C 116 -62 114 20 84 72 C 64 124 -64 124 -84 72 Z" fill="#0b0305" />
+        <path d="M-62 34 C -70 104 -34 140 0 142 C 34 140 70 104 62 34 Z" fill="#0e0406" />
+        <ellipse cx={-22} cy={110} rx={9} ry={6} fill="#3a0a08" />
+        <ellipse cx={22} cy={110} rx={9} ry={6} fill="#3a0a08" />
+        {/* iron crown */}
+        <path d="M-64 -128 L -46 -176 L -26 -134 L 0 -190 L 26 -134 L 46 -176 L 64 -128 Z" fill="#1a0708" stroke="#8a2412" strokeWidth={2.5} />
+        {/* molten cracks across the chest */}
+        <g opacity={form * lava} style={{ filter: "drop-shadow(0 0 6px #ff3a10)" }}>
+          <path d="M-150 220 L -110 260 L -128 310 L -90 360 M 140 210 L 100 262 L 124 318 L 92 372 M -20 180 L 0 236 L -14 300 L 10 360" stroke="#ff4a1a" strokeWidth={3} fill="none" />
+        </g>
+      </g>
+      {/* eyes */}
+      <g opacity={eyes * form}>
+        {[-1, 1].map((d) => (
+          <g key={d}>
+            <ellipse cx={d * 38} cy={-38} rx={40} ry={18} fill="rgba(255,50,20,0.5)" style={{ filter: "blur(10px)" }} />
+            <path d={`M${d * 14} -40 Q ${d * 38} -54 ${d * 62} -34 Q ${d * 38} -28 ${d * 14} -40 Z`} fill="#ff5a24" />
+            <ellipse cx={d * 40} cy={-40} rx={5} ry={3} fill="#fff2c0" />
+          </g>
+        ))}
+      </g>
+    </g>
+  );
+};
+
+/* ---------------- caparisoned elephant (side view, facing right) ---------------- */
+export const Elephant: React.FC<{ t: number; s?: number; color?: string; rider?: boolean }> = ({ t, s = 1, color = "#2a1612", rider = true }) => {
+  const step = (k: number) => Math.sin(t * 3.2 + k * Math.PI) * 10;
+  const nod = Math.sin(t * 3.2) * 2;
+  return (
+    <g transform={`scale(${s})`}>
+      {[-150, 70].map((x, k) => (
+        <rect key={`b${x}`} x={x} y={-160} width={52} height={160} rx={18} fill="#1c0e0b" transform={`rotate(${-step(k)} ${x + 26} -160)`} />
+      ))}
+      <ellipse cx={-20} cy={-250} rx={210} ry={140} fill={color} />
+      {[-110, 110].map((x, k) => (
+        <rect key={`f${x}`} x={x} y={-170} width={56} height={170} rx={20} fill={color} transform={`rotate(${step(k + 1)} ${x + 28} -170)`} />
+      ))}
+      <g transform={`rotate(${nod} 170 -280)`}>
+        <circle cx={180} cy={-280} r={95} fill={color} />
+        <path d="M240 -250 C 290 -200 280 -120 270 -60 C 266 -30 290 -20 300 -36" stroke={color} strokeWidth={36} fill="none" strokeLinecap="round" />
+        <path d="M120 -330 C 70 -330 50 -250 80 -190 C 110 -170 150 -200 160 -260 Z" fill="#3a1e18" />
+        <path d="M230 -230 Q 270 -200 300 -214" stroke="#fff4e0" strokeWidth={9} fill="none" strokeLinecap="round" />
+        <circle cx={208} cy={-300} r={6} fill="#120806" />
+        <path d="M150 -370 Q 200 -390 240 -350 L 220 -330 Q 190 -356 160 -346 Z" fill="#b8231a" stroke={GOLD} strokeWidth={3} />
+      </g>
+      <path d="M-210 -270 C -230 -250 -236 -200 -228 -170" stroke={color} strokeWidth={8} fill="none" />
+      {/* jhul (decorated cloth) */}
+      <path d="M-150 -380 L 110 -380 L 120 -250 Q -20 -220 -160 -250 Z" fill="#b8231a" stroke={GOLD} strokeWidth={5} />
+      {new Array(8).fill(0).map((_, i) => <circle key={i} cx={-140 + i * 34} cy={-246 + Math.sin(i) * 4} r={6} fill={GOLD} />)}
+      {rider && (
+        <g transform="translate(-20 -384) scale(0.3)">
+          <Durga arms={10} rim={1.4} t={t} halo={0.9} />
+        </g>
+      )}
+    </g>
+  );
+};
+
+/* ---------------- bearers carrying the pratima on a bamboo platform ---------------- */
+const Bearer: React.FC<{ x: number; t: number; phase: number; color: string }> = ({ x, t, phase, color }) => {
+  const w = Math.sin(t * 5.5 + phase);
+  return (
+    <g transform={`translate(${x} ${Math.abs(Math.cos(t * 5.5 + phase)) * -4})`}>
+      <g transform="translate(0 -78)">
+        <rect x={-6} y={0} width={12} height={78} rx={6} fill={color} transform={`rotate(${w * 22})`} />
+        <rect x={-6} y={0} width={12} height={78} rx={6} fill={color} transform={`rotate(${-w * 22})`} />
+      </g>
+      <path d="M-26 -78 L 26 -78 L 20 -150 L -20 -150 Z" fill={color} />
+      <path d="M-30 -60 Q 0 -50 30 -60 L 24 -98 L -24 -98 Z" fill="#f2e6d0" opacity={0.9} />
+      <circle cx={0} cy={-166} r={15} fill={color} />
+      <rect x={10} y={-210} width={10} height={64} rx={5} fill={color} transform="rotate(-10 15 -150)" />
+    </g>
+  );
+};
+
+export const Procession: React.FC<{ t: number; s?: number; color?: string }> = ({ t, s = 1, color = "#24110d" }) => {
+  const bob = Math.sin(t * 11) * 2;
+  return (
+    <g transform={`scale(${s})`}>
+      {[-150, -55, 55, 150].map((x, i) => <Bearer key={x} x={x} t={t} phase={i * 1.7} color={color} />)}
+      <g transform={`translate(0 ${-212 + bob})`}>
+        <rect x={-230} y={-8} width={460} height={14} rx={7} fill="#6a4a2a" />
+        <rect x={-130} y={-34} width={260} height={28} fill="#7a1c14" stroke={GOLD} strokeWidth={3} />
+        <g transform="translate(0 -34) scale(0.42)">
+          <Durga arms={10} rim={1.5} t={t} halo={1} />
+        </g>
+      </g>
+    </g>
+  );
+};
+
+/* ---------------- Tiltwave "TW" mark ---------------- */
+export const TWLogo: React.FC<{ w: number; draw?: number; letters?: number; shine?: number; stroke?: number }> = ({ w, draw = 1, letters = 1, shine = -1, stroke = 3 }) => {
+  const h = w * 0.58;
+  const per = 2 * (w + h);
+  return (
+    <svg width={w + 20} height={h + 20} viewBox={`-10 -10 ${w + 20} ${h + 20}`} style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id="twGold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffe9a8" />
+          <stop offset="50%" stopColor="#f0b63c" />
+          <stop offset="100%" stopColor="#c98a22" />
+        </linearGradient>
+        <linearGradient id="twShine" x1="0" y1="0" x2="1" y2="0">
+          <stop offset={`${Math.max(0, shine - 0.12) * 100}%`} stopColor="#fff" stopOpacity={0} />
+          <stop offset={`${shine * 100}%`} stopColor="#fff" stopOpacity={0.9} />
+          <stop offset={`${Math.min(1, shine + 0.12) * 100}%`} stopColor="#fff" stopOpacity={0} />
+        </linearGradient>
+        <mask id="twMask">
+          <rect x={0} y={0} width={w} height={h} rx={w * 0.06} fill="none" stroke="#fff" strokeWidth={stroke} />
+          <text x={w / 2} y={h * 0.72} textAnchor="middle" fontFamily="CinzelTW, serif" fontWeight={700} fontSize={h * 0.62} letterSpacing={h * 0.04} fill="#fff">TW</text>
+        </mask>
+      </defs>
+      <rect x={0} y={0} width={w} height={h} rx={w * 0.06} fill="none" stroke="url(#twGold)" strokeWidth={stroke} strokeDasharray={per} strokeDashoffset={per * (1 - draw)} />
+      <text x={w / 2} y={h * 0.72} textAnchor="middle" fontFamily="CinzelTW, serif" fontWeight={700} fontSize={h * 0.62} letterSpacing={h * 0.04} fill="url(#twGold)" opacity={letters}>TW</text>
+      {shine >= 0 && shine <= 1.1 && <rect x={0} y={0} width={w} height={h} fill="url(#twShine)" mask="url(#twMask)" />}
+    </svg>
+  );
+};
