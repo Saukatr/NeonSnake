@@ -10,6 +10,7 @@
     "@fontsource/cinzel": "^5.1.0",
     "@fontsource/cinzel-decorative": "^5.1.0",
     "@fontsource/cormorant-garamond": "^5.1.0",
+    "@fontsource/noto-serif-bengali": "^5.1.0",
     "@remotion/cli": "^4.0.534",
     "@remotion/google-fonts": "^4.0.534",
     "@types/react": "^18.3.12",

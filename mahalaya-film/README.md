@@ -1,51 +1,42 @@
-# Mahalaya: Shubho Mahalaya (reference-footage edit)
+# Mahalaya: Shubho Mahalaya (original animated film)
 
-A 44.5 s devotional film for Mahalaya, cut **only from the three supplied reference videos**
-(their audio is not used). It is built with local tools:
-- **ffmpeg** for shot prep: crop, watermark removal and motion-interpolated slow motion.
-- **Remotion** for the master timeline, light/dust/petal overlays and audio.
-- **HyperFrames** for beat detection and the final "SHUBHO MAHALAYA" card.
+A 44.5 s original animated devotional film for Mahalaya.
+
+- **What's original:** every frame is drawn in code as vector "papercut" illustration. No reference footage and no character-sheet imagery appear in it.
+- **What the references inspired:** the story and settings. That covers the dawn radio broadcast, the misty Ganga with the Howrah bridge and kash, the Goddess taking form against the sun, the dhakis and the boat, and the shiuli flowers.
+
+## Tools
+
+- **Remotion** (`src/story.tsx`, `src/art.tsx`, `src/fx.tsx`): all scenes, motion and timing, plus the audio.
+- **HyperFrames** (`hf/`): beat detection (`hf/beats/`) and the animated title "শুভ মহালয়া / SHUBHO MAHALAYA". The title is rendered as a transparent RGBA PNG sequence, which Remotion overlays on the final scene.
 
 ## Audio
 
 The supplied recording, trimmed as follows:
-- The leading 1.27 s of silence is removed, so t = 0 is the first note.
+- The leading 1.27 s of silence is removed.
 - It is cut to 44.5 s.
-- A 5 s **quarter-sine fade-out** runs from 39.5 to 44.5 s. It eases out from the music and reaches true silence on the last frame, as the picture fades to black.
+- A 5 s **quarter-sine fade-out** runs from 39.5 to 44.5 s. It reaches silence on the final frame as the picture fades to black.
 
-## Shot list (`src/shots.json`)
+## Story and sync (seconds)
 
-| Time (s) | Source | Shot |
+| Time | Scene | Sync |
 |---|---|---|
-| 0.00 – 2.80 | ref 1 | Radio tuned at dawn: the Mahalaya broadcast |
-| 2.80 – 6.68 | ref 1 | Clay home glowing at first light |
-| 6.68 – 9.59 | ref 1 | The family listening |
-| 9.59 – 13.04 | ref 2 | Misty Ganga, Howrah bridge, kash |
-| 13.04 – 15.48 | ref 3 | The Goddess takes form; arms appear |
-| 15.48 – 18.64 | ref 2 | **Reveal of Maa Durga on the strongest accent** (bloom flash) |
-| 18.64 – 21.79 | ref 2 | Sari, anklets, trident |
-| 21.79 – 24.89 | ref 2 | The elephant strides through the mud (hard cut on the 21.8 hit) |
-| 24.89 – 27.06 | ref 2 | Maa arrives on the elephant |
-| 27.06 – 30.01 | ref 2 | Dhakis lead the way |
-| 30.01 – 33.26 | ref 2 | Triumphant wide: Maa with the dhakis, petals begin |
-| 33.26 – 36.72 | ref 1 | The idol carried home through kash |
-| 36.72 – 39.00 | ref 1 | Shiuli flowers fall |
-| 39.00 – 44.50 | ref 2 + HyperFrames | Maa Durga in a halo; **SHUBHO MAHALAYA**; fade to black |
-
-Each vertical or square reference shot becomes a sharp centre panel with feathered edges, over a blurred copy of itself, to fill 16:9.
-- **ref 1:** the creator's handle, avatar and screen-recording player UI are cropped out or avoided.
-- **ref 2:** the logo is cropped off.
-- **ref 3:** the black side bars are removed.
+| 0 – 6.7 | Dawn in a Bengal village; a radio carries the Mahalaya broadcast in golden waves | waves swell on 3.4 / 3.8 / 4.3 / 4.6 / 5.4 |
+| 6.7 – 13.0 | The misty Ganga: Howrah bridge, kash, a boat with a small pratima; darkness creeps in from 12.0 | dissolve on 6.7 |
+| 13.0 – 15.5 | Darkness rises: storm, a horned shadow with burning eyes | lightning on 13.5 / 13.9 / 14.7 |
+| 15.5 – 21.8 | The Goddess takes form against the sun; ten arms emerge, each with its weapon; the third eye opens | burst on 15.48 (strongest hit); one arm per beat 16.1 → 20.6 |
+| 21.8 – 30.0 | Light against darkness: her trident's beam drives back the shadow | sparks on 24.9 – 29.6, clash 26.96, strike 30.01 |
+| 30.0 – 36.7 | Maa is coming home: dhakis march through kash by the river at sunrise | drumsticks strike on the beats |
+| 36.7 – 39.0 | Shiuli flowers fall; lotus and diyas | dissolve |
+| 39.0 – 44.5 | The Goddess in a sun mandala; **শুভ মহালয়া / SHUBHO MAHALAYA**; fade to black | title from 39.2 |
 
 ## Rebuild
 
 ```bash
 npm install
-python3 tools/prep_shots.py <folder with the three reference videos>      # → public/shots/s01..s14.mp4
-cd hf && npx hyperframes render . -f 24 -q high --crf 14 -o ../public/hf_final.mp4 && cd ..
-REMOTION_CHROME=/path/to/chrome-headless-shell npx remotion render src/index.ts Mahalaya out/mahalaya_ref_1080p.mp4 \
+cd hf && npx hyperframes render . --format png-sequence -f 24 -o ../public/title && cd ..
+REMOTION_CHROME=/path/to/chrome-headless-shell npx remotion render src/index.ts Mahalaya out/mahalaya_original_1080p.mp4 \
   --codec=h264 --crf=16 --color-space=bt709 --audio-codec=aac --audio-bitrate=320k
 ```
 
-The final card's portrait panel (`hf/final_panel.mp4`) is ref 2 at 27.165 s, cropped to `472:816:0:36`, slowed to 0.34×,
-motion-interpolated to 24 fps and scaled to 452×780.
+The earlier experiments are still in the tree but unused: `src/scenes.tsx`, `src/Mahalaya.tsx`, `src/Film.tsx` and `tools/prep_shots.py`.

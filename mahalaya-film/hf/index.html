@@ -6,84 +6,42 @@
     <script src="vendor/gsap.min.js"></script>
     <style>
       @font-face { font-family: "Cinzel Decorative"; font-weight: 700; src: url("fonts/cinzel-decorative-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Noto Serif Bengali"; font-weight: 600; src: url("fonts/noto-serif-bengali-bengali-600-normal.woff2") format("woff2"); }
       @font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 500; src: url("fonts/cormorant-garamond-latin-500-italic.woff2") format("woff2"); }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
-      .clip, .layer { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; }
-      .abs { position: absolute; }
-      #bg { background: radial-gradient(ellipse 60% 70% at 50% 34%, #e9a24a 0%, #a8401a 30%, #5a0c10 62%, #1e0305 100%); }
-      #halo { left: 560px; top: -170px; width: 800px; height: 800px; border-radius: 50%; background: radial-gradient(circle, rgba(255,236,190,0.95) 0%, rgba(255,206,130,0.5) 32%, rgba(255,180,100,0) 68%); }
-      #hero { left: 734px; top: 22px; width: 452px; height: 780px; object-fit: cover;
-        -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 46%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 50% 50% at 50% 46%, #000 62%, transparent 100%); }
-      #rays { background: conic-gradient(from 0deg at 50% 30%, rgba(255,220,150,0) 0deg, rgba(255,220,150,0.22) 3deg, rgba(255,220,150,0) 8deg, rgba(255,220,150,0) 17deg, rgba(255,220,150,0.18) 20deg, rgba(255,220,150,0) 25deg, rgba(255,220,150,0) 30deg); mix-blend-mode: screen; filter: blur(6px);
-        -webkit-mask-image: radial-gradient(ellipse 55% 60% at 50% 30%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 55% 60% at 50% 30%, #000 20%, transparent 75%); }
-      #title { left: 0; top: 800px; width: 1920px; text-align: center; font-family: "Cinzel Decorative", serif; font-weight: 700; font-size: 104px; letter-spacing: 0.06em; line-height: 1.15; white-space: nowrap; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+      .clip { position: absolute; }
+      #bn { left: 0; top: 772px; width: 1920px; text-align: center; font-family: "Noto Serif Bengali", serif; font-weight: 600; font-size: 40px; color: #ffd98a; letter-spacing: 0.04em; text-shadow: 0 2px 8px rgba(30,4,0,0.9); }
+      #title { left: 0; top: 820px; width: 1920px; text-align: center; font-family: "Cinzel Decorative", serif; font-weight: 700; font-size: 104px; letter-spacing: 0.06em; line-height: 1.15; white-space: nowrap; }
       #title span { display: inline-block; background: linear-gradient(180deg, #fff6d8 0%, #ffd77a 38%, #d79a2b 62%, #ffe6a6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 16px rgba(255,190,90,0.55)) drop-shadow(0 3px 2px rgba(40,6,0,0.8)); }
       #title .sp { width: 0.42em; }
-      #divider { left: 610px; top: 948px; width: 700px; height: 30px; transform-origin: 50% 50%; }
-      #subtitle { left: 0; top: 978px; width: 1920px; text-align: center; font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 500; font-size: 40px; color: #ffe9c2; letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(30,4,0,0.95); }
-      #fadeout { background: #000; }
+      #divider { left: 610px; top: 954px; width: 700px; height: 30px; transform-origin: 50% 50%; }
+      #subtitle { left: 0; top: 984px; width: 1920px; text-align: center; font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 500; font-size: 40px; color: #ffe9c2; letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(30,4,0,0.95); }
     </style>
   </head>
   <body>
-    <!-- Final card. t=0 here is 38.75 s on the master (0.25 s dissolve handle), ends at 44.5 s. -->
+    <!-- Transparent title overlay for the final scene. t=0 is 38.75 s on the Remotion master; ends at 44.5 s. -->
     <div id="root" data-composition-id="main" data-start="0" data-duration="5.75" data-width="1920" data-height="1080">
-      <div id="bg" class="clip" data-start="0" data-duration="5.75" data-track-index="0"></div>
-      <div id="rays" class="clip" data-start="0" data-duration="5.75" data-track-index="1"></div>
-      <div id="halo" class="clip abs" data-layout-allow-overflow data-start="0" data-duration="5.75" data-track-index="1"></div>
-      <video id="hero" class="clip abs" src="final_panel.mp4" muted data-start="0" data-duration="5.75" data-track-index="2"></video>
-      <div id="petals" class="clip" data-start="0" data-duration="5.75" data-track-index="3"></div>
-      <div id="title" class="clip abs" data-start="0" data-duration="5.75" data-track-index="4" aria-label="SHUBHO MAHALAYA"></div>
-      <svg id="divider" class="clip abs" data-start="0" data-duration="5.75" data-track-index="5" viewBox="0 0 700 30">
+      <div id="bn" class="clip" data-start="0" data-duration="5.75" data-track-index="0">শুভ মহালয়া</div>
+      <div id="title" class="clip" data-start="0" data-duration="5.75" data-track-index="1" aria-label="SHUBHO MAHALAYA"></div>
+      <svg id="divider" class="clip" data-start="0" data-duration="5.75" data-track-index="2" viewBox="0 0 700 30">
         <line x1="0" y1="15" x2="300" y2="15" stroke="#e8b85a" stroke-width="1.6" />
         <line x1="400" y1="15" x2="700" y2="15" stroke="#e8b85a" stroke-width="1.6" />
         <path d="M350 3 L362 15 L350 27 L338 15 Z" fill="none" stroke="#ffd77a" stroke-width="1.6" />
         <circle cx="350" cy="15" r="3" fill="#ffd77a" />
         <circle cx="318" cy="15" r="2.4" fill="#e8b85a" /><circle cx="382" cy="15" r="2.4" fill="#e8b85a" />
       </svg>
-      <div id="subtitle" class="clip abs" data-start="0" data-duration="5.75" data-track-index="6">May light triumph over darkness, and goodness prevail.</div>
-      <div id="fadeout" class="clip" data-start="4.65" data-duration="1.1" data-track-index="7"></div>
+      <div id="subtitle" class="clip" data-start="0" data-duration="5.75" data-track-index="3">May light triumph over darkness, and goodness prevail.</div>
     </div>
-
     <script>
-      function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-      const NS = "http://www.w3.org/2000/svg";
       const tl = gsap.timeline({ paused: true });
-
-      // slow push on the Goddess + breathing glow
-      tl.fromTo("#hero", { scale: 1.0, y: 6 }, { scale: 1.04, y: 0, duration: 5.75, ease: "sine.out" }, 0);
-      tl.fromTo("#halo", { scale: 0.88, opacity: 0.7 }, { scale: 1.06, opacity: 1, duration: 5.75, ease: "sine.inOut" }, 0);
-      tl.fromTo("#rays", { rotation: -4 }, { rotation: 4, duration: 5.75, ease: "none" }, 0);
-
-      // flower petals
-      (function () {
-        const host = document.getElementById("petals"); const r = rng(32);
-        const cols = ["#d8341f", "#f08a1c", "#f7b32b", "#e9506b", "#c2181f", "#fff4e0"];
-        for (let i = 0; i < 34; i++) {
-          const s = document.createElementNS(NS, "svg"); const sz = 14 + r() * 20;
-          s.setAttribute("width", sz); s.setAttribute("height", sz * 1.3); s.setAttribute("viewBox", "0 0 20 26");
-          s.style.position = "absolute"; s.style.left = (r() * 1920) + "px"; s.style.top = "-60px";
-          if (r() > 0.75) s.style.filter = "blur(2.5px)";
-          s.innerHTML = `<path d="M10 1 C17 6 19 15 10 25 C1 15 3 6 10 1 Z" fill="${cols[Math.floor(r() * cols.length)]}"/>`;
-          host.appendChild(s);
-          const fall = 4 + r() * 3; const off = r() * fall; const dx = (r() - 0.5) * 240; const r0 = r() * 360; const spin = 200 + r() * 300;
-          for (let k = 0; k < 3; k++)
-            tl.fromTo(s, { y: -60, x: 0, rotation: r0 }, { y: 1200, x: dx, rotation: r0 + spin, duration: fall, ease: "none", immediateRender: k === 0 }, -off + k * fall);
-        }
-      })();
-
-      // SHUBHO MAHALAYA, letter by letter (from 39.15 s on the master)
-      (function () {
-        const host = document.getElementById("title");
-        for (const ch of "SHUBHO MAHALAYA") { const s = document.createElement("span"); if (ch === " ") { s.className = "sp"; s.innerHTML = "&nbsp;"; } else s.textContent = ch; host.appendChild(s); }
-        tl.fromTo("#title span", { opacity: 0, y: 26, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: "power3.out", stagger: 0.05 }, 0.4);
-      })();
-      tl.fromTo("#divider", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.9, ease: "power2.out" }, 1.45);
-      tl.fromTo("#subtitle", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 1.0, ease: "power2.out" }, 1.75);
-
-      // gentle fade to black, landing with the audio fade at 44.5 s
-      tl.fromTo("#fadeout", { opacity: 0 }, { opacity: 1, duration: 1.1, ease: "sine.in" }, 4.65);
-
+      tl.fromTo("#bn", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 0.3);
+      const host = document.getElementById("title");
+      for (const ch of "SHUBHO MAHALAYA") { const s = document.createElement("span"); if (ch === " ") { s.className = "sp"; s.innerHTML = "&nbsp;"; } else s.textContent = ch; host.appendChild(s); }
+      tl.fromTo("#title span", { opacity: 0, y: 26, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: "power3.out", stagger: 0.05 }, 0.45);
+      tl.fromTo("#divider", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.9, ease: "power2.out" }, 1.5);
+      tl.fromTo("#subtitle", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 1.0, ease: "power2.out" }, 1.8);
+      tl.to({}, { duration: 0.001 }, 5.749);
       window.__timelines = window.__timelines || {};
       window.__timelines["main"] = tl;
     </script>
