@@ -1,0 +1,10 @@
+import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path';
+import { chromium } from 'playwright-core';
+const root = path.dirname(new URL(import.meta.url).pathname);
+const server = http.createServer((req, res) => { const p = path.join(root, decodeURIComponent(req.url.split('?')[0])); fs.readFile(p, (e, d) => { if (e) { res.writeHead(404); res.end(); return; } res.writeHead(200, { 'Content-Type': p.endsWith('.js') ? 'text/javascript' : 'text/html' }); res.end(d); }); }).listen(8130);
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--no-sandbox'] });
+const pg = await b.newPage({ viewport: { width: 640, height: 360 } });
+await pg.goto('http://localhost:8130/film.html?w=640&h=360');
+await pg.waitForFunction(() => window.filmReady === true);
+fs.writeFileSync('cues.json', await pg.evaluate(() => window.getCues()));
+await b.close(); server.close();
