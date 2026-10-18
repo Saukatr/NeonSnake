@@ -195,7 +195,7 @@ const STAGE_TEXT = {new:"Not contacted", due:"Follow-up due", sent:"Waiting", re
 
 function fill(s, l){
   const seg = SEG[l.segment];
-  return s.replaceAll("{company}", l.company).replaceAll("{angle}", l.angle).replaceAll("{offer}", seg.offer)
+  return s.replaceAll("{company}'s", l.company + (l.company.endsWith("s") ? "'" : "'s")).replaceAll("{company}", l.company).replaceAll("{angle}", l.angle).replaceAll("{offer}", seg.offer)
     .replaceAll("{short}", seg.short).replaceAll("{audit}", seg.audit)
     .replaceAll("{name}", sender.name || "[YOUR_NAME]")
     .replaceAll("{portfolio}", sender.portfolio || "[PORTFOLIO_LINK]")
