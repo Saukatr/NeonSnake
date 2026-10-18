@@ -1,0 +1,455 @@
+<title>Tilt Wave Outreach</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a studio "outreach desk" — pipeline strip on top, lead queue on the left, the message being sent on the right. */
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --ink:#131a2e; --muted:#5b6377; --line:#dde1ea;
+  --accent:#d98a0b; --accent-ink:#1b1300; --accent-soft:#fbefd9;
+  --ok:#1f7a4d; --ok-soft:#dff3e8; --warn:#a2580a; --warn-soft:#fdebd3; --bad:#a33a3a; --bad-soft:#f8e1e1; --info:#2c55a8; --info-soft:#e2eafa;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1220; --surface:#161b2c; --ink:#e8ebf3; --muted:#9aa2b6; --line:#2a3148;
+  --accent:#f0a43a; --accent-ink:#1b1300; --accent-soft:#3a2a10;
+  --ok:#5fcf95; --ok-soft:#163626; --warn:#f2b263; --warn-soft:#3a2810; --bad:#f08a8a; --bad-soft:#3d1c1c; --info:#8fb0f5; --info-soft:#1c2a4a;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1220; --surface:#161b2c; --ink:#e8ebf3; --muted:#9aa2b6; --line:#2a3148;
+  --accent:#f0a43a; --accent-ink:#1b1300; --accent-soft:#3a2a10;
+  --ok:#5fcf95; --ok-soft:#163626; --warn:#f2b263; --warn-soft:#3a2810; --bad:#f08a8a; --bad-soft:#3d1c1c; --info:#8fb0f5; --info-soft:#1c2a4a;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{flex:none}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,4vw,34px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:2px 0 0;font-size:14px}
+h2{font-family:var(--display);font-weight:600;font-size:18px;margin:0}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+button,select,input,textarea{font:inherit;color:inherit}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer;text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* pipeline strip */
+.pipeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.stage{padding:12px 14px;border-right:1px solid var(--line);cursor:pointer;background:none;border-top:0;border-bottom:0;border-left:0;text-align:left;display:flex;flex-direction:column;gap:2px}
+.stage:last-child{border-right:0}
+.stage .n{font-family:var(--display);font-weight:800;font-size:26px;font-variant-numeric:tabular-nums;line-height:1}
+.stage[aria-pressed="true"]{background:var(--accent-soft)}
+.stage.due .n{color:var(--warn)}
+@media (max-width:720px){.pipeline{grid-template-columns:repeat(3,minmax(0,1fr))}.stage:nth-child(3){border-right:0}.stage:nth-child(-n+3){border-bottom:1px solid var(--line)}}
+
+/* sender details */
+details.sender{border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+details.sender summary{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:center;list-style:none}
+details.sender summary::-webkit-details-marker{display:none}
+.sender-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:0 16px 16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field input,.field select,textarea{border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:8px 10px;min-width:0}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--warn-soft);color:var(--warn)}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+
+/* main split */
+.desk{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.desk{grid-template-columns:1fr}}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters input{flex:1 1 180px}
+.filters select,.filters input{border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:7px 10px;min-width:0}
+.queue{display:flex;flex-direction:column;gap:8px}
+.lead{display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:12px 12px 12px 0;cursor:pointer;text-align:left;width:100%}
+.lead[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.lead .stripe{border-radius:0 3px 3px 0;background:var(--line)}
+.lead.s-sent .stripe{background:var(--info)} .lead.s-due .stripe{background:var(--warn)} .lead.s-replied .stripe,.lead.s-won .stripe{background:var(--ok)} .lead.s-lost .stripe{background:var(--bad)}
+.lead .name{font-weight:600;font-size:15px}
+.lead .meta{color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.chip{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:5px;background:var(--bg);color:var(--muted);border:1px solid var(--line);align-self:start}
+.status-chip{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;align-self:start;white-space:nowrap}
+.st-new{background:var(--bg);color:var(--muted)} .st-sent{background:var(--info-soft);color:var(--info)} .st-due{background:var(--warn-soft);color:var(--warn)} .st-replied,.st-won{background:var(--ok-soft);color:var(--ok)} .st-lost{background:var(--bad-soft);color:var(--bad)}
+.empty{border:1px dashed var(--line);border-radius:12px;padding:24px;color:var(--muted);text-align:center}
+
+/* composer */
+.composer{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (max-width:900px){.composer{position:static}}
+.contacts{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 10px;align-items:center;font-size:14px}
+.contacts .v{font-family:var(--mono);font-size:13px;overflow-wrap:anywhere;user-select:all}
+.copy{border:0;background:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 4px}
+.copy:hover{color:var(--ink)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{border:0;background:none;padding:8px 10px;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.subject{font-weight:600}
+.msg{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:14px;line-height:1.6;max-height:420px;overflow:auto}
+.msg mark{background:var(--accent-soft);color:var(--ink);border-radius:3px;padding:0 2px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.note{font-size:13px;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+textarea{width:100%;min-height:64px;resize:vertical}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="var(--ink)"/><path d="M6 25c4-7 8-7 12 0s8 7 12 0 4-4 4-4" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" transform="rotate(-8 20 20)"/></svg>
+      <div>
+        <h1>Tilt Wave Outreach</h1>
+        <p class="sub">Leads across Kolkata, Bangalore, Mumbai and Delhi NCR. Review each message, send it yourself, log it here.</p>
+      </div>
+    </div>
+    <span class="note" id="syncState">Connecting to your tracker…</span>
+  </header>
+
+  <div class="pipeline" role="group" aria-label="Filter by stage">
+    <button class="stage" data-stage="all" aria-pressed="true"><span class="label">All leads</span><span class="n" id="c-all">0</span></button>
+    <button class="stage" data-stage="new" aria-pressed="false"><span class="label">Not contacted</span><span class="n" id="c-new">0</span></button>
+    <button class="stage due" data-stage="due" aria-pressed="false"><span class="label">Follow-up due</span><span class="n" id="c-due">0</span></button>
+    <button class="stage" data-stage="sent" aria-pressed="false"><span class="label">Waiting</span><span class="n" id="c-sent">0</span></button>
+    <button class="stage" data-stage="replied" aria-pressed="false"><span class="label">Replied / won</span><span class="n" id="c-replied">0</span></button>
+    <button class="stage" data-stage="lost" aria-pressed="false"><span class="label">Not interested</span><span class="n" id="c-lost">0</span></button>
+  </div>
+
+  <details class="sender" id="senderBox">
+    <summary><h2>Your details for every message</h2><span class="pill" id="senderPill">3 placeholders left</span></summary>
+    <div class="sender-grid">
+      <label class="field"><span class="label">Your name</span><input id="s-name" placeholder="e.g. Saukat Roy" autocomplete="name"></label>
+      <label class="field"><span class="label">Portfolio link</span><input id="s-portfolio" placeholder="https://…" inputmode="url"></label>
+      <label class="field"><span class="label">WhatsApp number</span><input id="s-whatsapp" placeholder="+91 98xxx xxxxx" inputmode="tel"></label>
+      <div class="field"><span class="label">&nbsp;</span><button class="btn primary" id="saveSender">Save details</button></div>
+    </div>
+  </details>
+
+  <div class="desk">
+    <section style="display:flex;flex-direction:column;gap:12px;min-width:0" aria-label="Lead queue">
+      <div class="filters">
+        <input id="q" type="search" placeholder="Search company or city" aria-label="Search leads">
+        <select id="f-city" aria-label="City"><option value="">All cities</option><option>Kolkata</option><option>Bangalore</option><option>Mumbai</option><option value="ncr">Delhi NCR</option><option value="other">Other / pan-India</option></select>
+        <select id="f-seg" aria-label="Segment"><option value="">All segments</option><option value="d2c">D2C brands</option><option value="startup">Startups</option><option value="agency">Agencies (white-label)</option><option value="local">Local businesses</option></select>
+      </div>
+      <div class="queue" id="queue"><div class="empty">Your leads appear here once the tracker connects.</div></div>
+    </section>
+
+    <aside class="composer" id="composer" aria-label="Message">
+      <div class="empty" id="composerEmpty">Pick a lead to see their pitch, contact details and send buttons.</div>
+      <div id="composerBody" hidden></div>
+    </aside>
+  </div>
+
+  <p class="note">Contact sources: <b>verified</b> = a mailto, tel or wa.me link on their own site · <b>site</b> = shown on their own site or page · <b>listing</b> = a third-party directory, so double-check it · <b>DM</b> = no public email, reach out via Instagram, LinkedIn or their contact form.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const SEG = {
+  d2c:{label:"D2C", offer:"product videos, ad creatives and Shopify sites for D2C brands", short:"D2C brands", audit:"your product pages and Instagram",
+       subject:"Free mini-audit for {company}'s product pages & Reels"},
+  startup:{label:"Startup", offer:"launch videos, product explainers and websites for startups", short:"startups", audit:"your website and product story",
+       subject:"Free mini-audit of {company}'s website & product story"},
+  agency:{label:"Agency", offer:"videos, motion design and brand creative", short:"agencies, white-label", audit:"",
+       subject:"White-label video & design partner for {company}"},
+  local:{label:"Local", offer:"websites, promo videos and branding for local businesses", short:"local businesses", audit:"your website, Google listing and Instagram",
+       subject:"Free 3-point audit for {company}'s website & Instagram"}
+};
+const CITY_NCR = ["Delhi","New Delhi","Delhi NCR","Gurgaon","Noida"];
+const FOLLOW_DAYS = [3,4]; // email 2 three days after email 1; email 3 four days after email 2
+
+let leads = {};          // id -> {base fields + status fields}
+let sender = {name:"", portfolio:"", whatsapp:""};
+let db = null, selected = null, stageFilter = "all", tab = "email";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),1800)}
+function today(){const d=new Date();d.setHours(0,0,0,0);return d}
+function addDays(iso,n){const d=new Date(iso);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function fmt(iso){return iso?new Date(iso).toLocaleDateString(undefined,{day:"numeric",month:"short"}):""}
+
+function stageOf(l){
+  if(l.status==="won"||l.status==="replied") return "replied";
+  if(l.status==="lost") return "lost";
+  if(!l.step) return "new";
+  if(l.nextDue && new Date(l.nextDue) <= today()) return "due";
+  return "sent";
+}
+const STAGE_TEXT = {new:"Not contacted", due:"Follow-up due", sent:"Waiting", replied:"Replied", lost:"Not interested"};
+
+function fill(s, l){
+  const seg = SEG[l.segment];
+  return s.replaceAll("{company}", l.company).replaceAll("{angle}", l.angle).replaceAll("{offer}", seg.offer)
+    .replaceAll("{short}", seg.short).replaceAll("{audit}", seg.audit)
+    .replaceAll("{name}", sender.name || "[YOUR_NAME]")
+    .replaceAll("{portfolio}", sender.portfolio || "[PORTFOLIO_LINK]")
+    .replaceAll("{whatsapp}", sender.whatsapp || "[WHATSAPP_NUMBER]");
+}
+
+function emailFor(l, step){
+  const seg = SEG[l.segment];
+  const subject = fill(seg.subject, l);
+  let body;
+  if(step===1){
+    const offerPara = l.segment==="agency"
+      ? "We work white-label, so everything goes out under your name. To make it easy to judge us, I'd like to do one free sample for you: a short video edit or ad creative for one of your clients."
+      : "Here's my offer: a free mini-audit of {audit}. You'll get 3 specific fixes you can use whether or not we ever work together.";
+    body = `Hi {company} team,
+
+{angle}
+
+I run Tilt Wave Studios, a small studio that makes {offer}.
+
+${offerPara}
+
+Interested? Just reply "yes" and I'll send it within 48 hours.
+
+Some of our work: {portfolio}
+
+Thanks,
+{name}
+Tilt Wave Studios
+WhatsApp: {whatsapp}
+
+If this isn't relevant, reply "no thanks" and I won't email again.`;
+    return {subject, body: fill(body, l)};
+  }
+  if(step===2){
+    body = l.segment==="agency"
+      ? `Hi again,
+
+Just checking you saw my note. The free sample offer still stands: send me one client brief and I'll turn around a short video or ad creative under your brand, no charge.
+
+A quick "yes" is all I need.
+
+{name}
+Tilt Wave Studios`
+      : `Hi again,
+
+Just checking you saw my note. The free mini-audit for {company} still stands: 3 practical fixes, no strings attached.
+
+A quick "yes" is all I need.
+
+{name}
+Tilt Wave Studios`;
+    return {subject:"Re: "+subject, body: fill(body, l)};
+  }
+  body = `Hi,
+
+I'll close the loop here so I don't crowd your inbox. If you'd ever like help with videos, a website or branding, reply to this email or WhatsApp me on {whatsapp}.
+
+All the best with {company}!
+{name}
+Tilt Wave Studios`;
+  return {subject:"Re: "+subject, body: fill(body, l)};
+}
+
+function whatsappFor(l, step){
+  const seg = SEG[l.segment];
+  const ask = l.segment==="agency"
+    ? "Could I do one free sample video or ad creative for one of your clients, under your brand?"
+    : "Could I send you a free 3-point mini-audit of {audit}? No strings attached.";
+  const t = step<=1
+    ? `Hi {company} team! I'm {name} from Tilt Wave Studios. We make {offer}.
+
+{angle}
+
+${ask}
+
+Our work: {portfolio}
+(Reply STOP and I won't message again.)`
+    : `Hi again from {name} at Tilt Wave Studios. Just following up on my message about {company}. Happy to send that free ${l.segment==="agency"?"sample":"mini-audit"} whenever you like. If it's not a fit, no worries at all!`;
+  return fill(t, l);
+}
+
+function nextStep(l){ return Math.min((l.step||0)+1, 3); }
+function highlight(text){ return esc(text).replace(/\[(YOUR_NAME|PORTFOLIO_LINK|WHATSAPP_NUMBER)\]/g, "<mark>[$1]</mark>"); }
+
+function renderCounts(){
+  const all = Object.values(leads); const c = {all:all.length,new:0,due:0,sent:0,replied:0,lost:0};
+  all.forEach(l => c[stageOf(l)]++);
+  for(const k in c) $("#c-"+k).textContent = c[k];
+}
+
+function matches(l){
+  const q = $("#q").value.trim().toLowerCase();
+  if(q && !(l.company+" "+l.city).toLowerCase().includes(q)) return false;
+  const city = $("#f-city").value;
+  if(city==="ncr" && !CITY_NCR.includes(l.city)) return false;
+  if(city==="other" && ["Kolkata","Bangalore","Mumbai",...CITY_NCR].includes(l.city)) return false;
+  if(city && city!=="ncr" && city!=="other" && l.city!==city) return false;
+  if($("#f-seg").value && l.segment!==$("#f-seg").value) return false;
+  if(stageFilter!=="all" && stageOf(l)!==stageFilter) return false;
+  return true;
+}
+
+function renderQueue(){
+  const q = $("#queue");
+  const list = Object.values(leads).filter(matches).sort((a,b)=>{
+    const order = {due:0,new:1,sent:2,replied:3,lost:4};
+    return order[stageOf(a)]-order[stageOf(b)] || a.company.localeCompare(b.company);
+  });
+  if(!Object.keys(leads).length){ return; }
+  if(!list.length){ q.innerHTML = `<div class="empty">No leads match these filters.</div>`; return; }
+  q.innerHTML = list.map(l => {
+    const st = stageOf(l);
+    const reach = l.email ? "Email" : l.whatsapp ? "WhatsApp" : l.phone ? "Phone" : "DM";
+    const when = st==="due" ? `follow-up due ${fmt(l.nextDue)}` : st==="sent" ? `next ${fmt(l.nextDue) || "—"}` : l.lastSent ? `last ${fmt(l.lastSent)}` : "";
+    return `<button class="lead s-${st}" data-id="${esc(l.id)}" aria-current="${selected===l.id}">
+      <span class="stripe"></span>
+      <span style="min-width:0;display:flex;flex-direction:column;gap:2px">
+        <span class="name">${esc(l.company)}</span>
+        <span class="meta"><span>${esc(l.city)}</span><span>${reach}</span>${l.step?`<span>email ${l.step}/3 sent</span>`:""}${when?`<span>${when}</span>`:""}</span>
+      </span>
+      <span style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <span class="status-chip st-${st}">${STAGE_TEXT[st]}</span>
+        <span class="chip">${SEG[l.segment].label}</span>
+      </span>
+    </button>`;
+  }).join("");
+}
+
+function contactRow(label, value, extra=""){
+  if(!value) return "";
+  return `<span class="label">${label}</span><span class="v">${esc(value)}</span><span>${extra}<button class="copy" data-copy="${esc(value)}">Copy</button></span>`;
+}
+
+function renderComposer(){
+  const l = leads[selected];
+  $("#composerEmpty").hidden = !!l; const body = $("#composerBody"); body.hidden = !l;
+  if(!l) return;
+  const step = nextStep(l);
+  const em = emailFor(l, step);
+  const wa = whatsappFor(l, step);
+  const gmail = l.email ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(l.email)}&su=${encodeURIComponent(em.subject)}&body=${encodeURIComponent(em.body)}` : "";
+  const waLink = l.whatsapp ? `https://wa.me/${l.whatsapp}?text=${encodeURIComponent(wa)}` : "";
+  const placeholders = /\[(YOUR_NAME|PORTFOLIO_LINK|WHATSAPP_NUMBER)\]/.test(em.body+wa);
+  const conf = {verified:"verified", site:"from their site", listing:"from a directory, so double-check it", dm:"no public email"}[l.confidence];
+  const done = l.step>=3 || ["replied","won","lost"].includes(l.status);
+  if(tab==="whatsapp" && !l.whatsapp) tab = "email";
+
+  body.innerHTML = `
+    <div class="row"><div style="min-width:0"><h2>${esc(l.company)}</h2>
+      <div class="note">${esc(l.city)} · ${SEG[l.segment].label} · contact ${conf}</div></div>
+      <select id="statusSel" aria-label="Status">
+        ${[["new","Not contacted"],["sent","In sequence"],["replied","Replied"],["won","Won"],["lost","Not interested"]].map(([v,t])=>`<option value="${v}" ${((l.status||"new")===v)?"selected":""}>${t}</option>`).join("")}
+      </select></div>
+    <div class="contacts">
+      ${contactRow("Email", l.email)}
+      ${contactRow("WhatsApp", l.whatsapp ? "+"+l.whatsapp : "")}
+      ${contactRow("Phone", l.phone)}
+      ${contactRow("Instagram", l.instagram)}
+      ${l.website?`<span class="label">Website</span><span class="v"><a href="${esc(l.website)}" target="_blank" rel="noopener">${esc(l.website.replace(/^https?:\/\//,""))}</a></span><span></span>`:""}
+      <span class="label">Source</span><span class="v"><a href="${esc(l.source)}" target="_blank" rel="noopener">where we found this</a></span><span></span>
+    </div>
+    ${done ? `<div class="note">${l.step>=3?"All 3 emails sent.":""} Sequence finished for this lead.</div>` : ""}
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="email" aria-selected="${tab==="email"}">Email ${step} of 3</button>
+      ${l.whatsapp?`<button class="tab" role="tab" data-tab="whatsapp" aria-selected="${tab==="whatsapp"}">WhatsApp</button>`:""}
+      <button class="tab" role="tab" data-tab="dm" aria-selected="${tab==="dm"}">DM / form</button>
+    </div>
+    ${tab==="email" ? `
+      <div class="subject">${highlight(em.subject)}</div>
+      <div class="msg" id="msgText">${highlight(em.body)}</div>
+      <div class="actions">
+        ${gmail?`<a class="btn primary" href="${esc(gmail)}" target="_blank" rel="noopener">Open in Gmail</a>`:`<span class="note">No public email. Use the DM / form tab.</span>`}
+        <button class="btn" data-copy-msg="email">Copy email</button>
+        <button class="btn" id="markSent" ${done?'aria-disabled="true"':""}>Mark email ${step} sent</button>
+      </div>
+      ${step>1?`<p class="note">Tip: send follow-ups as a reply in the same Gmail thread so they stay together.</p>`:""}
+    ` : tab==="whatsapp" ? `
+      <div class="msg" id="msgText">${highlight(wa)}</div>
+      <div class="actions">
+        <a class="btn primary" href="${esc(waLink)}" target="_blank" rel="noopener">Open in WhatsApp</a>
+        <button class="btn" data-copy-msg="wa">Copy message</button>
+        <button class="btn" id="markSent" ${done?'aria-disabled="true"':""}>Mark sent</button>
+      </div>
+      <p class="note">This business lists this number as WhatsApp on its own site. Send one message and one follow-up at most.</p>
+    ` : `
+      <div class="msg" id="msgText">${highlight(wa)}</div>
+      <div class="actions">
+        <button class="btn primary" data-copy-msg="wa">Copy message</button>
+        ${l.instagram?`<a class="btn" href="https://instagram.com/${esc(l.instagram.replace("@",""))}" target="_blank" rel="noopener">Open Instagram</a>`:""}
+        ${l.confidence==="dm" && l.source && !l.source.includes("inc42")?`<a class="btn" href="${esc(l.source)}" target="_blank" rel="noopener">Open contact page</a>`:""}
+        <button class="btn" id="markSent" ${done?'aria-disabled="true"':""}>Mark sent</button>
+      </div>
+      <p class="note">Paste into an Instagram DM, LinkedIn message or the contact form on their site.${l.id==="firi"?" Firi's founders are Karishma Rathaur and Vivek Madani; find them on LinkedIn.":""}</p>
+    `}
+    ${placeholders?`<p class="note"><mark>Highlighted</mark> placeholders fill in once you save your details above.</p>`:""}
+    <label class="field"><span class="label">Notes</span><textarea id="notes" placeholder="Reply received, call booked, budget…">${esc(l.notes||"")}</textarea></label>
+  `;
+  body.dataset.email = em.subject+"\n\n"+em.body; body.dataset.wa = wa;
+}
+
+function render(){ renderCounts(); renderQueue(); renderComposer(); }
+
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); toast("Copied"); }
+  catch{ const m=$("#msgText"); if(m){const r=document.createRange();r.selectNodeContents(m);const s=getSelection();s.removeAllRanges();s.addRange(r);} toast("Select and copy manually"); }
+}
+
+async function save(id, patch){
+  Object.assign(leads[id], patch); render();
+  if(!db){ toast("Not saved: tracker offline"); return; }
+  try{ await db.collection("leads").doc(id).update(patch); }
+  catch(e){ toast("Couldn't save. Check your access to this page."); }
+}
+
+document.addEventListener("click", e => {
+  const lead = e.target.closest(".lead"); if(lead){ selected = lead.dataset.id; tab="email"; render(); if(innerWidth<900) $("#composer").scrollIntoView({behavior:"smooth"}); return; }
+  const st = e.target.closest(".stage"); if(st){ stageFilter = st.dataset.stage; document.querySelectorAll(".stage").forEach(b=>b.setAttribute("aria-pressed", b===st)); renderQueue(); return; }
+  const t = e.target.closest(".tab"); if(t){ tab = t.dataset.tab; renderComposer(); return; }
+  const c = e.target.closest("[data-copy]"); if(c){ copyText(c.dataset.copy); return; }
+  const cm = e.target.closest("[data-copy-msg]"); if(cm){ const b=$("#composerBody"); copyText(cm.dataset.copyMsg==="email"?b.dataset.email:b.dataset.wa); return; }
+  if(e.target.closest("#markSent")){
+    const l = leads[selected]; const step = nextStep(l); const now = new Date().toISOString().slice(0,10);
+    const nextDue = step<3 ? addDays(now, FOLLOW_DAYS[step-1]) : null;
+    save(selected, {step, lastSent: now, nextDue, status: "sent", lastChannel: tab});
+    toast(step<3 ? `Logged. Follow-up due ${fmt(nextDue)}` : "Logged. Sequence complete");
+    return;
+  }
+  if(e.target.closest("#saveSender")){ saveSender(); }
+});
+document.addEventListener("change", e => {
+  if(e.target.id==="statusSel"){ const v=e.target.value; save(selected, v==="new"?{status:"new",step:0,nextDue:null,lastSent:null}:{status:v}); }
+  if(e.target.id==="notes"){ save(selected, {notes: e.target.value}); }
+});
+["#q","#f-city","#f-seg"].forEach(s => $(s).addEventListener("input", renderQueue));
+
+function renderSender(){
+  $("#s-name").value = sender.name||""; $("#s-portfolio").value = sender.portfolio||""; $("#s-whatsapp").value = sender.whatsapp||"";
+  const left = ["name","portfolio","whatsapp"].filter(k=>!sender[k]).length;
+  const p = $("#senderPill"); p.textContent = left ? `${left} placeholder${left>1?"s":""} left` : "All set"; p.classList.toggle("ok", !left);
+  if(left) $("#senderBox").open = true;
+}
+async function saveSender(){
+  sender = {name:$("#s-name").value.trim(), portfolio:$("#s-portfolio").value.trim(), whatsapp:$("#s-whatsapp").value.trim()};
+  try{ localStorage.setItem("tw-sender", JSON.stringify(sender)); }catch{}
+  renderSender(); render();
+  if(db){ try{ await db.doc("settings/sender").set(sender); toast("Details saved"); }catch{ toast("Saved on this device only"); } }
+  else toast("Saved on this device only");
+}
+
+(async function start(){
+  try{ const s = JSON.parse(localStorage.getItem("tw-sender")||"null"); if(s) sender = s; }catch{}
+  renderSender();
+  db = window.claude ? await window.claude.use("db") : null;
+  if(!db){ $("#syncState").textContent = "Tracker offline. Sign in to claude.ai to load your leads."; $("#queue").innerHTML = `<div class="empty">Your lead list lives in this page's tracker store. Open the page while signed in to load it.</div>`; return; }
+  db.doc("settings/sender").onSnapshot(s => { if(s.exists){ sender = {...sender, ...s.data()}; renderSender(); render(); } });
+  db.collection("leads").onSnapshot(snap => {
+    const next = {}; snap.docs.forEach(d => next[d.id] = {id:d.id, ...d.data()}); leads = next;
+    $("#syncState").textContent = snap.empty ? "No leads yet" : `${snap.size} leads · synced`;
+    if(snap.empty) $("#queue").innerHTML = `<div class="empty">No leads in the tracker yet. Ask Claude to add some.</div>`;
+    if(!selected){ const first = Object.values(leads).sort((a,b)=>a.company.localeCompare(b.company)).find(l=>stageOf(l)==="due"||stageOf(l)==="new"); selected = first?.id ?? null; }
+    render();
+  }, () => { $("#syncState").textContent = "Couldn't load leads. Check you have access to this page."; });
+})();
+</script>
