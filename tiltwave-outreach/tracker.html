@@ -162,6 +162,14 @@ const SEG = {
   local:{label:"Local", offer:"websites, promo videos and branding for local businesses", short:"local businesses", audit:"your website, Google listing and Instagram",
        subject:"Free 3-point audit for {company}'s website & Instagram"}
 };
+const DRIVE = id => `https://drive.google.com/file/d/${id}/view`;
+const SAMPLES = {
+  d2c: [["DJI Osmo concept ad","1a4ciA4UrR40ld8XbuedAVcmpX6Up2qX6"],["Ray-Ban concept ad","1VzbaM8M1OkTgY9RprqqyzgX7Che-EZKW"],["Floating product shot","1xGNzKiGxMh5PcaxG3xotkh6muEvp1o9n"]],
+  startup: [["AI avatar video","12dG4NgWuZUKKVJZ4lalqkyLYebriAd0N"],["DJI Osmo concept ad","1a4ciA4UrR40ld8XbuedAVcmpX6Up2qX6"]],
+  agency: [["Motion graphics reel","1Lx46cr1P7lqBGc-KuoVuJBScD9QOiz3t"],["Ray-Ban concept ad","1VzbaM8M1OkTgY9RprqqyzgX7Che-EZKW"]],
+  local: [["Logo animation (Sunny Enterprise)","1SH3C_5LPUGVeUeMhDZ1YgWlm6c3k-o2s"],["Tilt Wave promo ad","1AeYWA0aPoxHwh5_osngYWj4uDQFn4BXO"]]
+};
+const sampleList = seg => SAMPLES[seg].map(([t,id]) => `- ${t}: ${DRIVE(id)}`).join("\n");
 const CITY_NCR = ["Delhi","New Delhi","Delhi NCR","Gurgaon","Noida"];
 const FOLLOW_DAYS = [3,4]; // email 2 three days after email 1; email 3 four days after email 2
 
@@ -212,7 +220,10 @@ ${offerPara}
 
 Interested? Just reply "yes" and I'll send it within 48 hours.
 
-Some of our work: {portfolio}
+A few samples close to what you'd need:
+${sampleList(l.segment)}
+
+Full portfolio: {portfolio}
 
 Thanks,
 {name}
@@ -264,7 +275,8 @@ function whatsappFor(l, step){
 
 ${ask}
 
-Our work: {portfolio}
+Sample: ${DRIVE(SAMPLES[l.segment][0][1])}
+Full portfolio: {portfolio}
 (Reply STOP and I won't message again.)`
     : `Hi again from {name} at Tilt Wave Studios. Just following up on my message about {company}. Happy to send that free ${l.segment==="agency"?"sample":"mini-audit"} whenever you like. If it's not a fit, no worries at all!`;
   return fill(t, l);
